@@ -27,7 +27,9 @@ namespace BirthdayNotifications.Utils {
     /// <summary>
     /// Gets the default instance.
     /// </summary>
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
     public static SerilogEventSink Instance => instance ??= new SerilogEventSink(null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
     /// <summary>
     /// Emit a log event.

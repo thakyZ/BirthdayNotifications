@@ -24,7 +24,9 @@ namespace BirthdayNotifications.Windows {
   public partial class CustomMessageBox : Window {
     private readonly Builder _builder;
     private MessageBoxResult _result;
+#pragma warning disable CS8603 // Possible null reference return.
     private CustomMessageBoxViewModel ViewModel => DataContext as CustomMessageBoxViewModel;
+#pragma warning restore CS8603 // Possible null reference return.
 
     public const string ErrorExplanation = "An error in Birthday Notifications occurred. If this issue persists, please report\r\nit on GitHub by clicking the button below, describing the issue and copying the text in the box.";
 

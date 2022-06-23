@@ -1,0 +1,18 @@
+{
+  "profiles": {
+    "BirthdayNotifications": {
+      "commandName": "Project"
+    },
+    "Debug -- Check Only": {
+      "commandName": "Project",
+      "commandLineArgs": "--check"
+    },
+    "Debug BN_DEBUG": {
+      "commandName": "Project",
+      "commandLineArgs": "--check",
+      "environmentVariables": {
+        "BN_DEBUG": "true"
+      }
+    }
+  }
+}

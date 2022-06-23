@@ -5,9 +5,12 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Navigation;
 
+using BirthdayNotifications.Config.Parsers;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+using Serilog;
 using Serilog.Core;
 
 namespace BirthdayNotifications.Config {
@@ -17,7 +20,7 @@ namespace BirthdayNotifications.Config {
     /// <summary>
     /// 
     /// </summary>
-    [JsonPropertyAttribute("config_version")]
+    [JsonProperty("config_version")]
     public int? ConfigVersion {
       get;
       internal set;
@@ -25,18 +28,24 @@ namespace BirthdayNotifications.Config {
     /// <summary>
     /// 
     /// </summary>
-    [JsonPropertyAttribute("birthday_users")]
+    [JsonProperty("birthday_users")]
     public List<BirthdayUser> BirthdayUsers {
       get; set;
-    } = new List<BirthdayUser>() { BirthdayUser.Default };
+    } = new List<BirthdayUser>();
     /// <summary>
     /// 
     /// </summary>
-    [JsonPropertyAttribute("own_birthday")]
+    [JsonProperty("own_birthday")]
     public BirthdayUser OwnBirthday {
       get; set;
     } = BirthdayUser.Default;
     #endregion
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [JsonIgnore]
+    private static string _configPath = "";
 
     /// <summary>
     /// 
@@ -57,6 +66,7 @@ namespace BirthdayNotifications.Config {
     /// <param name="configPath"></param>
     /// <returns></returns>
     public static BirthdayNotifSettings Load(string configPath) {
+      _configPath = configPath;
       BirthdayNotifSettings config;
       if (!File.Exists(configPath)) {
         Console.WriteLine($"Could not find configuration file at {configPath}");
@@ -66,7 +76,7 @@ namespace BirthdayNotifications.Config {
       }
 
       using (StreamReader reader = File.OpenText(configPath)) {
-        BirthdayNotifSettings? birthdayNotifSettings = JToken.ReadFromAsync(new JsonTextReader(reader)).Result.ToObject<BirthdayNotifSettings>();
+        BirthdayNotifSettings birthdayNotifSettings = JToken.ReadFromAsync(new JsonTextReader(reader)).Result.ToObject<BirthdayNotifSettings>();
         config = birthdayNotifSettings is not null ? birthdayNotifSettings : CreateDefault(configPath);
       }
 
@@ -84,7 +94,9 @@ namespace BirthdayNotifications.Config {
           File.Copy(Path.GetFileName(configPath), $"{Path.GetFileNameWithoutExtension(configPath)}.backup.json");
         }
       } catch (Exception e) {
-        // None
+        Log.Error("Failed to backup config file.");
+        Log.Error($"{e.Message}");
+        Log.Error($"{e.StackTrace}");
       }
       try {
         TextWriter tw = File.CreateText(configPath);
@@ -98,8 +110,38 @@ namespace BirthdayNotifications.Config {
         }
         tw.Close();
       } catch (Exception e) {
-        // None
+        Log.Error($"Failed to write config to file: {configPath}");
+        Log.Error(e.Message);
+        Log.Error(e.StackTrace);
       }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    internal void SaveConfig() {
+      SaveConfig(_configPath);
+    }
+  }
+
+  [Serializable]
+  public class Avatar {
+    /// <summary>
+    /// 
+    /// </summary>
+    [JsonProperty("name", Order = 1, Required = Required.Always)]
+    public string Name {
+      get; set;
+    }
+
+    [JsonProperty("data", Order = 2, Required = Required.Always)]
+    public string Data {
+      get; set;
+    }
+
+    public Avatar(string name = "", string data = "") {
+      Name = name;
+      Data = data;
     }
   }
 
@@ -111,60 +153,77 @@ namespace BirthdayNotifications.Config {
     /// <summary>
     /// 
     /// </summary>
-    [JsonPropertyAttribute("birthday", Order = 2, Required = Required.Always)]
-    public long BirthdayUnix {
+    [JsonProperty("birthday", Order = 2, Required = Required.Always)]
+    [JsonConverter(typeof(DateParser))]
+    public DateTimeOffset BirthdayUnix {
       get; set;
-    } = 0;
+    }
+
     /// <summary>
     /// 
     /// </summary>
-    [JsonPropertyAttribute("name", Order = 1, Required = Required.Always)]
+    [JsonProperty("name", Order = 1, Required = Required.Always)]
     public string Name {
       get; set;
     }
+
     /// <summary>
     /// 
     /// </summary>
-    [JsonPropertyAttribute("avatar", Order = 3, Required = Required.Always)]
-    public string UserAvatar {
+    [JsonProperty("avatar", Order = 3, Required = Required.AllowNull, NullValueHandling = NullValueHandling.Include)]
+    public Avatar UserAvatar {
       get; set;
     }
+
     /// <summary>
     /// 
     /// </summary>
-    [JsonPropertyAttribute("enabled", Order = 4, Required = Required.Always)]
+    [JsonProperty("enabled", Order = 4, Required = Required.Always)]
     public bool Enabled {
       get; set;
     } = false;
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="birthdate"></param>
-    /// <param name="name"></param>
-    /// <param name="avatarBase64"></param>
-    public BirthdayUser(DateTime birthdate, string name, string avatarBase64) {
-      Name = name;
-      BirthdayUnix = ((DateTimeOffset)birthdate).ToUnixTimeSeconds();
-      UserAvatar = avatarBase64;
-    }
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="birthdate"></param>
-    /// <param name="name"></param>
-    /// <param name="avatarBase64"></param>
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="birthdate"></param>
+    /// <param name="name"></param>
+    /// <param name="avatarBase64"></param>
     [JsonConstructor]
-    public BirthdayUser(long birthdate, string name, string avatarBase64) {
+    public BirthdayUser(DateTimeOffset birthdate, string name, Avatar avatar = null) {
       Name = name;
       BirthdayUnix = birthdate;
-      UserAvatar = avatarBase64;
+      UserAvatar = avatar;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="birthdate"></param>
+    /// <param name="name"></param>
+    /// <param name="avatar"></param>
+    public BirthdayUser(long birthdate, string name, Avatar avatar = null) {
+      Name = name;
+      BirthdayUnix = DateTimeOffset.FromUnixTimeMilliseconds(birthdate);
+      UserAvatar = avatar;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="birthdate"></param>
+    /// <param name="name"></param>
+    /// <param name="avatarBase64"></param>
+    public BirthdayUser() {
+      Name = Default.Name;
+      BirthdayUnix = Default.BirthdayUnix;
+      UserAvatar = Default.UserAvatar;
     }
 
     /// <summary>
     /// 
     /// </summary>
     [JsonIgnore]
-    public static BirthdayUser Default => new(0, "None", "");
+    public static BirthdayUser Default => new(0, "None", null);
   }
 }

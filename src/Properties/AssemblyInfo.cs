@@ -9,4 +9,4 @@ using System.Windows;
                                               //(used if a resource is not found in the page,
                                               // app, or any theme specific resource dictionaries)
 )]
-[assembly: Guid("70334429-9c3f-4d38-b877-439daeb06f20")]
+[assembly: Guid("4860118c-fbe2-47e4-80ce-8d0c77c5dda3")]

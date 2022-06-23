@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using System.Windows;
 
 using BirthdayNotifications.Config;
 
@@ -9,10 +9,8 @@ using Microsoft.Toolkit.Uwp.Notifications;
 
 using Serilog;
 
-using Windows.Data.Xml.Dom;
+using Windows.Foundation.Collections;
 using Windows.UI.Notifications;
-using System.Xml.Linq;
-using System.DirectoryServices.ActiveDirectory;
 
 namespace BirthdayNotifications.Utils {
   /// <summary>
@@ -22,64 +20,75 @@ namespace BirthdayNotifications.Utils {
     /// <summary>
     /// 
     /// </summary>
-    private List<BirthdayUser> BirthdayUsers { get; set; } = new List<BirthdayUser>();
+    private List<BirthdayUser> BirthdayUsers { get; set; }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    private List<Task> NotificationTasks { get; set; } = new List<Task>();
+    private Action finished;
 
     /// <summary>
     /// 
     /// </summary>
     public Birthdays() {
+    }
+
+    public Birthdays(Action finished) {
+      this.finished = finished;
+    }
+
+    public void CheckBirthdays() {
       try {
-        BirthdayUsers = GetBirthdayOfToday();
+        var birthdaysToday = GetBirthdayOfToday();
+        BirthdayUsers = birthdaysToday is not null ? birthdaysToday : new List<BirthdayUser>();
       } catch (Exception e) {
-        // Test
+        Log.Error($"Failed to get birthdays:\n{e.Message}\n{e.StackTrace}");
       } finally {
-        if (BirthdayUsers.Count > 0) {
+        if (BirthdayUsers?.Count > 0) {
           NotifyMeOfBirthday();
         }
       }
+
+      if (finished is not null) {
+        finished.Invoke();
+      }
     }
 
     /// <summary>
     /// 
     /// </summary>
     /// <returns></returns>
-    private async Task<List<BirthdayUser>?> GetBirthdayOfTodayAsync() {
-      List<BirthdayUser>? who = await Task.Run(() => {
+    private static async Task<List<BirthdayUser>?> GetBirthdayOfTodayAsync() {
+      List<BirthdayUser>? who = await Task.Run(() =>
+      {
         var whoes = new List<BirthdayUser>();
-        if (App.Settings.OwnBirthday.Enabled) {
-          var borthday = DateTimeOffset.FromUnixTimeSeconds(App.Settings.OwnBirthday.BirthdayUnix).DateTime;
-          if (borthday.Month == DateTime.UtcNow.Month && borthday.DayOfYear == DateTime.UtcNow.DayOfYear && borthday.Hour <= DateTime.UtcNow.Hour) {
+        if (App.Settings.OwnBirthday.Enabled)
+        {
+          var borthday = App.Settings.OwnBirthday.BirthdayUnix.ToLocalTime().DateTime;
+          if (borthday.Month == DateTime.UtcNow.Month && borthday.DayOfYear == DateTime.UtcNow.DayOfYear)
+          {
             whoes.Add(App.Settings.OwnBirthday);
           }
         }
-        foreach (BirthdayUser user in App.Settings.BirthdayUsers) {
-          if (!user.Enabled) {
+        foreach (BirthdayUser user in App.Settings.BirthdayUsers)
+        {
+          if (!user.Enabled)
+          {
             continue;
           }
-          DateTime userBirthday = DateTimeOffset.FromUnixTimeSeconds(user.BirthdayUnix).ToLocalTime().DateTime;
-          if (userBirthday.Month == DateTime.Now.Month && userBirthday.Day == DateTime.Now.Day && userBirthday.Hour <= DateTime.Now.Hour) {
+          DateTime userBirthday = user.BirthdayUnix.ToLocalTime().DateTime;
+          if (userBirthday.Month == DateTime.Now.Month && userBirthday.Day == DateTime.Now.Day)
+          {
             whoes.Add(user);
-            Log.Information(user.Name);
           }
-        }
+       }
         return whoes;
       });
-      if (who.Count > 0) {
-        return who;
-      }
-      return null;
+      return who.Count > 0 ? who : null;
     }
 
     /// <summary>
     /// 
     /// </summary>
     /// <returns></returns>
-    private List<BirthdayUser> GetBirthdayOfToday() {
+    private static List<BirthdayUser> GetBirthdayOfToday() {
       var who = GetBirthdayOfTodayAsync().Result;
       if (who is null) {
         return new List<BirthdayUser>();
@@ -95,52 +104,36 @@ namespace BirthdayNotifications.Utils {
       return who;
     }
 
-    public string GetUserAvatar(string avatar) {
-      if (string.IsNullOrEmpty(avatar) || string.IsNullOrWhiteSpace(avatar)) {
-        return "pack://application:,,,/Resources/birthdaycat.png";
+    public static Uri GetUserAvatar(Avatar? avatar) {
+      Uri? uri = new (Cache.GetCacheFile("birthdaycat"));
+      if (avatar is not null && (!string.IsNullOrEmpty(avatar.Name) || !string.IsNullOrWhiteSpace(avatar.Name))) {
+        uri = new(Cache.GetCacheFile(avatar.Name));
       }
-      return avatar;
+      return uri;
     }
 
     /// <summary>
     /// 
     /// </summary>
     private void NotifyMeOfBirthday() {
-      var toasts = new List<ToastNotification>();
+      var toasts = new List<ToastContentBuilder>();
+      
       BirthdayUsers.ForEach((birthdayUser) => {
-        ToastVisual visual = new ToastVisual() {
-          BindingGeneric = new ToastBindingGeneric() {
-            Children = {
-              new AdaptiveText()
-              {
-                  Text = "It's a birthday!"
-              },
-              new AdaptiveText()
-              {
-                  Text = $"{birthdayUser.Name}'s birthday is today!"
-              }
-            },
-            AppLogoOverride = new ToastGenericAppLogo()
-            {
-              Source = GetUserAvatar(birthdayUser.UserAvatar),
-              HintCrop = ToastGenericAppLogoCrop.Circle
-            }
-          }
-        };
-        ToastContent toastContent = new ToastContent()
-        {
-          Visual = visual
-        };
-        toasts.Add(new ToastNotification(toastContent.GetXml()));
+        toasts.Add(new ToastContentBuilder()
+          .AddText("It's a birthday!")
+          .AddText($"{birthdayUser.Name}'s birthday is today!")
+          .AddAppLogoOverride(GetUserAvatar(birthdayUser.UserAvatar), ToastGenericAppLogoCrop.Circle)
+          .SetToastScenario(ToastScenario.Reminder));
+        Log.Information($"It was {birthdayUser.Name}'s birthday on this day.");
       });
-      var toastNotifier = ToastNotificationManager.CreateToastNotifier(AppUtils.GetAssemblyGUID());
-      foreach (ToastNotification toast in toasts) {
-        toast.Failed += (o, args) => {
-          var message = args.ErrorCode;
-          Log.Information(message.Message);
-        };
-        toastNotifier.Show(toast);
+
+      var toastNotifier = ToastNotificationManagerCompat.CreateToastNotifier();
+      
+      foreach (ToastContentBuilder toast in toasts) {
+        toastNotifier.Show(new ToastNotification(toast.GetXml()));
       }
+
+      _ = Task.Run(() => Task.Delay(5000));
     }
   }
 }

@@ -5,20 +5,348 @@
         xmlns:local="clr-namespace:BirthdayNotifications"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:viewModel="clr-namespace:BirthdayNotifications.Windows.ViewModel"
         xmlns:windows="clr-namespace:BirthdayNotifications.Windows"
         Title="Birthday Notification Editor"
         Width="845"
         Height="450"
         d:DataContext="{d:DesignInstance viewModel:MainWindowViewModel}"
-        Background="{DynamicResource MaterialDesignPaper}"
-        FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
         Icon="pack://application:,,,/Resources/birthdaynotification_icon.ico"
         ResizeMode="CanMinimize"
-        TextElement.FontWeight="Medium"
-        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Style="{StaticResource MaterialDesignWindow}"
         WindowStartupLocation="CenterScreen"
         mc:Ignorable="d"
         >
-  <Grid />
+  <Window.Resources>
+    <system:Double x:Key="IconSize">24</system:Double>
+    <system:Double x:Key="ButtonWidth">32</system:Double>
+    <system:Double x:Key="ImageSize">128</system:Double>
+    <GridLength x:Key="Spacing">5</GridLength>
+    <GridLength x:Key="SpacingStar">5*</GridLength>
+    <GridLength x:Key="ColumnWidth">32</GridLength>
+    <Style x:Key="UserAvatar" TargetType="{x:Type ContentControl}">
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="{x:Type ContentControl}">
+            <Grid>
+              <Rectangle Width="{StaticResource ImageSize}"
+                         Height="{StaticResource ImageSize}"
+                         Fill="{StaticResource MaterialDesignLightBackground}"
+                         />
+              <Image x:Name="UserAvatar"
+                     Width="{StaticResource ImageSize}"
+                     Height="{StaticResource ImageSize}"
+                     Source="{Binding CurrentUser_Avatar}"
+                     />
+              <Grid x:Name="UserAvatarOverlay" Visibility="Hidden">
+                <Rectangle Width="{StaticResource ImageSize}"
+                           Height="{StaticResource ImageSize}"
+                           Fill="#FF000000"
+                           Opacity="0.5"
+                           />
+                <Button x:Name="UserAvatarUpload"
+                        Width="32"
+                        Height="32"
+                        Click="UserAvatarUpload_Click"
+                        Style="{StaticResource MaterialDesignIconForegroundButton}"
+                        >
+                  <materialDesign:PackIcon Width="24"
+                                           Height="24"
+                                           Kind="Upload"
+                                           />
+                </Button>
+              </Grid>
+            </Grid>
+            <ControlTemplate.Triggers>
+              <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=IsMouseOver}" Value="True">
+                <Setter TargetName="UserAvatarOverlay" Property="Grid.Visibility" Value="Visible" />
+              </DataTrigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+  </Window.Resources>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="{StaticResource Spacing}" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="32" />
+      <RowDefinition Height="{StaticResource Spacing}" />
+    </Grid.RowDefinitions>
+    <Grid Grid.Row="1">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="{StaticResource Spacing}" />
+        <ColumnDefinition Width="256" />
+        <ColumnDefinition Width="{StaticResource Spacing}" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="{StaticResource Spacing}" />
+      </Grid.ColumnDefinitions>
+      <Grid Grid.Column="1">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="*" />
+          <RowDefinition Height="{StaticResource Spacing}" />
+          <RowDefinition Height="32" />
+        </Grid.RowDefinitions>
+        <ListBox x:Name="Users"
+                 Grid.Row="0"
+                 ItemsSource="{Binding BirthdayUserList}"
+                 SelectionChanged="AnyListBox_Selected"
+                 SelectionMode="Single"
+                 Style="{StaticResource MaterialDesignListBox}"
+                 >
+          <ListBox.Resources>
+            <Style BasedOn="{StaticResource MaterialDesignScrollViewer}" TargetType="ScrollViewer" />
+            <Style BasedOn="{StaticResource MaterialDesignScrollBarMinimal}" TargetType="ScrollBar" />
+          </ListBox.Resources>
+        </ListBox>
+        <Grid Grid.Row="2">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{StaticResource Spacing}" />
+            <ColumnDefinition Width="48" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="48" />
+            <ColumnDefinition Width="{StaticResource Spacing}" />
+          </Grid.ColumnDefinitions>
+          <Button x:Name="AddUser"
+                  Grid.Column="1"
+                  Width="48"
+                  Padding="0"
+                  Click="AddUserButton_OnClick"
+                  Style="{StaticResource MaterialDesignRaisedDarkButton}"
+                  >
+            <materialDesign:PackIcon Width="{StaticResource IconSize}"
+                                     Height="{StaticResource IconSize}"
+                                     Kind="PlusBold"
+                                     />
+          </Button>
+          <Button x:Name="SubUser"
+                  Grid.Column="3"
+                  Width="48"
+                  Padding="0"
+                  Click="SubUserButton_OnClick"
+                  Style="{StaticResource MaterialDesignRaisedDarkButton}"
+                  >
+            <materialDesign:PackIcon Width="{StaticResource IconSize}"
+                                     Height="{StaticResource IconSize}"
+                                     Kind="MinusThick"
+                                     />
+          </Button>
+        </Grid>
+      </Grid>
+      <Grid Grid.Column="3">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="48" />
+          <RowDefinition Height="{StaticResource Spacing}" />
+          <RowDefinition Height="48" />
+          <RowDefinition Height="{StaticResource Spacing}" />
+          <RowDefinition Height="48" />
+          <RowDefinition Height="{StaticResource Spacing}" />
+          <RowDefinition Height="256" />
+          <RowDefinition Height="{StaticResource SpacingStar}" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="{StaticResource Spacing}" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="{StaticResource Spacing}" />
+          </Grid.ColumnDefinitions>
+          <Grid Grid.Row="0"
+                Height="32"
+                VerticalAlignment="Center"
+                >
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="98" />
+              <ColumnDefinition Width="{StaticResource Spacing}" />
+              <ColumnDefinition Width="32" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"
+                       LineHeight="16"
+                       Style="{StaticResource MaterialDesignBodyLargeTextBlock}"
+                       >
+              Enabled
+            </TextBlock>
+            <TextBlock Grid.Column="2"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"
+                       Style="{StaticResource MaterialDesignBodyLargeTextBlock}"
+                       >
+              <materialDesign:PackIcon Width="24"
+                                       Height="24"
+                                       Kind="DragVertical"
+                                       />
+            </TextBlock>
+          </Grid>
+          <CheckBox x:Name="BirthdayUserIsEnabled"
+                    Grid.Column="2"
+                    VerticalAlignment="Center"
+                    Click="IsEnabledCheckbox_OnClick"
+                    IsChecked="{Binding CurrentUser_IsEnabled}"
+                    />
+        </Grid>
+        <Grid Grid.Row="2">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="{StaticResource Spacing}" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="{StaticResource Spacing}" />
+          </Grid.ColumnDefinitions>
+          <Grid Grid.Row="0"
+                Height="32"
+                VerticalAlignment="Center"
+                >
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="98" />
+              <ColumnDefinition Width="{StaticResource Spacing}" />
+              <ColumnDefinition Width="32" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"
+                       LineHeight="16"
+                       Style="{StaticResource MaterialDesignBodyLargeTextBlock}"
+                       >
+              Name
+            </TextBlock>
+            <TextBlock Grid.Column="2"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"
+                       Style="{StaticResource MaterialDesignBodyLargeTextBlock}"
+                       >
+              <materialDesign:PackIcon Width="24"
+                                       Height="24"
+                                       Kind="DragVertical"
+                                       />
+            </TextBlock>
+          </Grid>
+          <TextBox x:Name="BirthdayUserName"
+                   Grid.Column="2"
+                   VerticalAlignment="Center"
+                   Style="{StaticResource MaterialDesignTextBox}"
+                   TextChanged="NameTextBox_TextChanged"
+                   >
+            <TextBox.Text>
+              <Binding Path="CurrentUser_Name" UpdateSourceTrigger="PropertyChanged">
+                <Binding.ValidationRules>
+                  <viewModel:NotEmptyValidationRule ValidatesOnTargetUpdated="True" />
+                </Binding.ValidationRules>
+              </Binding>
+            </TextBox.Text>
+          </TextBox>
+        </Grid>
+        <Grid Grid.Row="4">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="{StaticResource Spacing}" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="{StaticResource Spacing}" />
+          </Grid.ColumnDefinitions>
+          <Grid Grid.Row="0"
+                Height="32"
+                VerticalAlignment="Center"
+                >
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="98" />
+              <ColumnDefinition Width="{StaticResource Spacing}" />
+              <ColumnDefinition Width="32" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"
+                       LineHeight="16"
+                       Style="{StaticResource MaterialDesignBodyLargeTextBlock}"
+                       >
+              Birthday
+            </TextBlock>
+            <TextBlock Grid.Column="2"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"
+                       Style="{StaticResource MaterialDesignBodyLargeTextBlock}"
+                       >
+              <materialDesign:PackIcon Width="24"
+                                       Height="24"
+                                       Kind="DragVertical"
+                                       />
+            </TextBlock>
+          </Grid>
+          <DatePicker x:Name="Birthday"
+                      Grid.Column="2"
+                      HorizontalAlignment="Left"
+                      VerticalAlignment="Center"
+                      materialDesign:HintAssist.Hint="Pick Date"
+                      materialDesign:TextFieldAssist.HasClearButton="True"
+                      SelectedDate="{Binding CurrentUser_BirthDate}"
+                      SelectedDateChanged="BirthdayDatePicker_OnSelectedDatedChanged"
+                      Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
+                      />
+        </Grid>
+        <Grid Grid.Row="6">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="{StaticResource Spacing}" />
+            <ColumnDefinition Width="512" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="{StaticResource Spacing}" />
+          </Grid.ColumnDefinitions>
+          <Grid Grid.Row="0"
+                Height="32"
+                Margin="0 8"
+                VerticalAlignment="Top"
+                >
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="98" />
+              <ColumnDefinition Width="{StaticResource Spacing}" />
+              <ColumnDefinition Width="32" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"
+                       LineHeight="16"
+                       Style="{StaticResource MaterialDesignBodyLargeTextBlock}"
+                       >
+              Avatar
+            </TextBlock>
+            <TextBlock Grid.Column="2"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"
+                       Style="{StaticResource MaterialDesignBodyLargeTextBlock}"
+                       >
+              <materialDesign:PackIcon Width="24"
+                                       Height="24"
+                                       Kind="DragVertical"
+                                       />
+            </TextBlock>
+          </Grid>
+          <ContentControl Grid.Column="2"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Top"
+                          Style="{StaticResource UserAvatar}"
+                          />
+        </Grid>
+      </Grid>
+    </Grid>
+    <Grid Grid.Row="2">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="{StaticResource ColumnWidth}" />
+        <ColumnDefinition Width="{StaticResource Spacing}" />
+      </Grid.ColumnDefinitions>
+      <Button x:Name="SaveButton"
+              Grid.Column="1"
+              Width="{StaticResource ButtonWidth}"
+              Padding="0"
+              Click="SaveButton_OnClick"
+              Style="{StaticResource MaterialDesignRaisedDarkButton}"
+              >
+        <materialDesign:PackIcon Width="{StaticResource IconSize}"
+                                 Height="{StaticResource IconSize}"
+                                 Kind="Floppy"
+                                 />
+      </Button>
+    </Grid>
+  </Grid>
 </Window>

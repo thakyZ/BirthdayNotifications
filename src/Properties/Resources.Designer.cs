@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace NekoBoiNick.BirthdayNotifications.Properties {
+namespace BirthdayNotifications.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace NekoBoiNick.BirthdayNotifications.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("NekoBoiNick.BirthdayNotifications.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BirthdayNotifications.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
