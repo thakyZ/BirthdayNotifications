@@ -25,24 +25,24 @@ using Windows.Media.Audio;
 namespace BirthdayNotifications.Utils {
   internal class Cache {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     private static string CacheDirectory {
       get => Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BirthdayNotifications", "Cache");
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     private Dictionary<string, string> _ApplicationFileHash = new();
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public Action Finished;
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     private static bool Changed {
       get; set;

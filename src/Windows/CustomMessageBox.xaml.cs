@@ -211,7 +211,9 @@ namespace BirthdayNotifications.Windows {
       internal bool ShowIntegrityReportLinks = false;
       internal bool ShowOfficialLauncher = false;
       internal bool ShowNewGitHubIssue = false;
+#nullable enable
       internal Window? ParentWindow = null;
+#nullable disable
       internal bool OverrideTopMostFromParentWindow = true;
 
       public Builder() {
@@ -304,10 +306,12 @@ namespace BirthdayNotifications.Windows {
         ShowNewGitHubIssue = showNewGitHubIssue;
         return this;
       }
+#nullable enable
       public Builder WithParentWindow(Window? window) {
         ParentWindow = window;
         return this;
       }
+#nullable disable
       public Builder WithParentWindow(Window window, bool overrideTopMost) {
         ParentWindow = window;
         OverrideTopMostFromParentWindow = overrideTopMost;
@@ -421,6 +425,7 @@ namespace BirthdayNotifications.Windows {
       }
     }
 
+#nullable enable
     public static MessageBoxResult Show(string text, string caption, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.Asterisk, Window? parentWindow = null) {
       return new Builder()
           .WithCaption(caption)
@@ -430,7 +435,9 @@ namespace BirthdayNotifications.Windows {
           .WithParentWindow(parentWindow)
           .ShowMessageBox();
     }
+#nullable disable
 
+#nullable enable
     public static bool AssertOrShowError(bool condition, string context, bool fatal = false, Window? parentWindow = null) {
       if (condition)
         return false;
@@ -447,6 +454,7 @@ namespace BirthdayNotifications.Windows {
 
       return true;
     }
+#nullable disable
 
     // https://docs.microsoft.com/en-us/archive/blogs/twistylittlepassagesallalike/everyone-quotes-command-line-arguments-the-wrong-way
     private static string EncodeParameterArgument(string argument, bool force = false) {

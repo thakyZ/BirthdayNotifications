@@ -33,7 +33,7 @@ namespace BirthdayNotifications.Utils {
 
     public static string GetAssemblyGUID() {
       var assembly = Assembly.GetExecutingAssembly();
-      var attribute = (GuidAttribute)assembly.GetCustomAttributes(typeof(GuidAttribute),true)[0];
+      var attribute = (GuidAttribute)assembly.GetCustomAttributes(typeof(GuidAttribute), true)[0];
       return attribute.Value;
     }
 

@@ -5,7 +5,7 @@ using System.Windows;
 
 using BirthdayNotifications.Config;
 
-using Microsoft.Toolkit.Uwp.Notifications;
+using CommunityToolkit.WinUI.Notifications;
 
 using Serilog;
 
@@ -14,18 +14,18 @@ using Windows.UI.Notifications;
 
 namespace BirthdayNotifications.Utils {
   /// <summary>
-  /// 
+  ///
   /// </summary>
   public class Birthdays {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     private List<BirthdayUser> BirthdayUsers { get; set; }
 
     private Action finished;
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public Birthdays() {
     }
@@ -52,40 +52,36 @@ namespace BirthdayNotifications.Utils {
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <returns></returns>
+#nullable enable
     private static async Task<List<BirthdayUser>?> GetBirthdayOfTodayAsync() {
-      List<BirthdayUser>? who = await Task.Run(() =>
-      {
+      List<BirthdayUser>? who = await Task.Run(() => {
         var whoes = new List<BirthdayUser>();
-        if (App.Settings.OwnBirthday.Enabled)
-        {
+        if (App.Settings.OwnBirthday.Enabled) {
           var borthday = App.Settings.OwnBirthday.BirthdayUnix.ToLocalTime().DateTime;
-          if (borthday.Month == DateTime.UtcNow.Month && borthday.DayOfYear == DateTime.UtcNow.DayOfYear)
-          {
+          if (borthday.Month == DateTime.UtcNow.Month && borthday.DayOfYear == DateTime.UtcNow.DayOfYear) {
             whoes.Add(App.Settings.OwnBirthday);
           }
         }
-        foreach (BirthdayUser user in App.Settings.BirthdayUsers)
-        {
-          if (!user.Enabled)
-          {
+        foreach (BirthdayUser user in App.Settings.BirthdayUsers) {
+          if (!user.Enabled) {
             continue;
           }
           DateTime userBirthday = user.BirthdayUnix.ToLocalTime().DateTime;
-          if (userBirthday.Month == DateTime.Now.Month && userBirthday.Day == DateTime.Now.Day)
-          {
+          if (userBirthday.Month == DateTime.Now.Month && userBirthday.Day == DateTime.Now.Day) {
             whoes.Add(user);
           }
-       }
+        }
         return whoes;
       });
       return who.Count > 0 ? who : null;
     }
+#nullable disable
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <returns></returns>
     private static List<BirthdayUser> GetBirthdayOfToday() {
@@ -104,20 +100,22 @@ namespace BirthdayNotifications.Utils {
       return who;
     }
 
+#nullable enable
     public static Uri GetUserAvatar(Avatar? avatar) {
-      Uri? uri = new (Cache.GetCacheFile("birthdaycat"));
+      Uri? uri = new(Cache.GetCacheFile("birthdaycat"));
       if (avatar is not null && (!string.IsNullOrEmpty(avatar.Name) || !string.IsNullOrWhiteSpace(avatar.Name))) {
         uri = new(Cache.GetCacheFile(avatar.Name));
       }
       return uri;
     }
+#nullable disable
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     private void NotifyMeOfBirthday() {
       var toasts = new List<ToastContentBuilder>();
-      
+
       BirthdayUsers.ForEach((birthdayUser) => {
         toasts.Add(new ToastContentBuilder()
           .AddText("It's a birthday!")
@@ -128,7 +126,7 @@ namespace BirthdayNotifications.Utils {
       });
 
       var toastNotifier = ToastNotificationManagerCompat.CreateToastNotifier();
-      
+
       foreach (ToastContentBuilder toast in toasts) {
         toastNotifier.Show(new ToastNotification(toast.GetXml()));
       }

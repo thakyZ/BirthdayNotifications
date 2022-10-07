@@ -85,12 +85,19 @@
       </Grid.ColumnDefinitions>
       <Grid Grid.Column="1">
         <Grid.RowDefinitions>
+          <RowDefinition Height="32" />
+          <RowDefinition Height="{StaticResource Spacing}" />
           <RowDefinition Height="*" />
           <RowDefinition Height="{StaticResource Spacing}" />
           <RowDefinition Height="32" />
         </Grid.RowDefinitions>
-        <ListBox x:Name="Users"
+        <TextBox x:Name="Search"
                  Grid.Row="0"
+                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                 TextChanged="Search_TextChanged"
+                 />
+        <ListBox x:Name="Users"
+                 Grid.Row="2"
                  ItemsSource="{Binding BirthdayUserList}"
                  SelectionChanged="AnyListBox_Selected"
                  SelectionMode="Single"
@@ -101,7 +108,7 @@
             <Style BasedOn="{StaticResource MaterialDesignScrollBarMinimal}" TargetType="ScrollBar" />
           </ListBox.Resources>
         </ListBox>
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="4">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="{StaticResource Spacing}" />
             <ColumnDefinition Width="48" />

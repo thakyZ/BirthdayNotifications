@@ -18,7 +18,7 @@ namespace BirthdayNotifications.Config {
   public class BirthdayNotifSettings {
     #region Birthday Notifications Setting
     /// <summary>
-    /// 
+    ///
     /// </summary>
     [JsonProperty("config_version")]
     public int? ConfigVersion {
@@ -26,14 +26,14 @@ namespace BirthdayNotifications.Config {
       internal set;
     } = 0;
     /// <summary>
-    /// 
+    ///
     /// </summary>
     [JsonProperty("birthday_users")]
     public List<BirthdayUser> BirthdayUsers {
       get; set;
     } = new List<BirthdayUser>();
     /// <summary>
-    /// 
+    ///
     /// </summary>
     [JsonProperty("own_birthday")]
     public BirthdayUser OwnBirthday {
@@ -42,13 +42,13 @@ namespace BirthdayNotifications.Config {
     #endregion
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     [JsonIgnore]
     private static string _configPath = "";
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="configPath"></param>
     /// <returns></returns>
@@ -61,7 +61,7 @@ namespace BirthdayNotifications.Config {
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="configPath"></param>
     /// <returns></returns>
@@ -84,7 +84,7 @@ namespace BirthdayNotifications.Config {
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="configPath"></param>
     public void SaveConfig(string configPath) {
@@ -117,7 +117,7 @@ namespace BirthdayNotifications.Config {
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     internal void SaveConfig() {
       SaveConfig(_configPath);
@@ -127,7 +127,7 @@ namespace BirthdayNotifications.Config {
   [Serializable]
   public class Avatar {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     [JsonProperty("name", Order = 1, Required = Required.Always)]
     public string Name {
@@ -146,12 +146,12 @@ namespace BirthdayNotifications.Config {
   }
 
   /// <summary>
-  /// 
+  ///
   /// </summary>
   [Serializable]
   public class BirthdayUser {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     [JsonProperty("birthday", Order = 2, Required = Required.Always)]
     [JsonConverter(typeof(DateParser))]
@@ -160,7 +160,7 @@ namespace BirthdayNotifications.Config {
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     [JsonProperty("name", Order = 1, Required = Required.Always)]
     public string Name {
@@ -168,7 +168,7 @@ namespace BirthdayNotifications.Config {
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     [JsonProperty("avatar", Order = 3, Required = Required.AllowNull, NullValueHandling = NullValueHandling.Include)]
     public Avatar UserAvatar {
@@ -176,7 +176,7 @@ namespace BirthdayNotifications.Config {
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     [JsonProperty("enabled", Order = 4, Required = Required.Always)]
     public bool Enabled {
@@ -184,7 +184,7 @@ namespace BirthdayNotifications.Config {
     } = false;
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="birthdate"></param>
     /// <param name="name"></param>
@@ -197,7 +197,7 @@ namespace BirthdayNotifications.Config {
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="birthdate"></param>
     /// <param name="name"></param>
@@ -209,7 +209,7 @@ namespace BirthdayNotifications.Config {
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="birthdate"></param>
     /// <param name="name"></param>
@@ -221,7 +221,7 @@ namespace BirthdayNotifications.Config {
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     [JsonIgnore]
     public static BirthdayUser Default => new(0, "None", null);

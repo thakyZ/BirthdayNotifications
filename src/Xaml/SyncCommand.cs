@@ -20,20 +20,25 @@ namespace BirthdayNotifications.Xaml {
       _canExecute = canExecute;
     }
 
-    public event EventHandler? CanExecuteChanged
-    {
+#nullable enable
+    public event EventHandler? CanExecuteChanged {
       add => CommandManager.RequerySuggested += value;
       remove => CommandManager.RequerySuggested -= value;
     }
+#nullable disable
 
+#nullable enable
     public bool CanExecute(object? parameter) {
       return _canExecute();
     }
+#nullable disable
 
+#nullable enable
     public void Execute(object? parameter) {
       if (parameter is not null) {
         _command(parameter);
       }
     }
+#nullable disable
   }
 }

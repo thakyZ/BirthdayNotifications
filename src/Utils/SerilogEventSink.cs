@@ -22,7 +22,9 @@ namespace BirthdayNotifications.Utils {
     /// <summary>
     /// Event on a log line being emitted.
     /// </summary>
+#nullable enable
     public event EventHandler<(string Line, LogEventLevel Level, DateTimeOffset TimeStamp, Exception? Exception)>? LogLine;
+#nullable disable
 
     /// <summary>
     /// Gets the default instance.

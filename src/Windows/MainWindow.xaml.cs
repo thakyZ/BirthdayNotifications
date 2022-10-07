@@ -19,6 +19,8 @@ using BirthdayNotifications.Config;
 using BirthdayNotifications.Utils;
 using BirthdayNotifications.Windows.ViewModel;
 
+using MaterialDesignThemes.Wpf;
+
 using Serilog;
 
 using Windows.Networking.NetworkOperators;
@@ -31,19 +33,19 @@ namespace BirthdayNotifications {
   /// </summary>
   public partial class MainWindow : Window {
     /// <summary>
-    /// 
+    ///
     /// </summary>
 #pragma warning disable CS8603 // Possible null reference return.
     private MainWindowViewModel Model => DataContext as MainWindowViewModel;
 #pragma warning restore CS8603 // Possible null reference return.
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     internal (int, BirthdayUser) CurrentlySelected_BirthdayUser = (0, BirthdayUser.Default);
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public MainWindow() {
       InitializeComponent();
@@ -62,12 +64,12 @@ namespace BirthdayNotifications {
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     private const int CURRENT_VERSION_LEVEL = 0;
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     private static void SetDefaults() {
@@ -99,12 +101,11 @@ namespace BirthdayNotifications {
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public void Initialize() {
 #if DEBUG
-      var fakeStartMenuItem = new MenuItem
-      {
+      var fakeStartMenuItem = new MenuItem {
         Header = "Fake start"
       };
       fakeStartMenuItem.Click += FakeStart_OnClick;
@@ -151,9 +152,16 @@ namespace BirthdayNotifications {
     }
 
     private void AnyListBox_Selected(object sender, RoutedEventArgs e) {
+      var previousIndex = CurrentlySelected_BirthdayUser.Item1;
+      if (previousIndex > App.Settings.BirthdayUsers.Count + 1) {
+        previousIndex = App.Settings.BirthdayUsers.Count - 1;
+      }
       var index = ((ListBox)sender).SelectedIndex;
       if (index == 0) {
         CurrentlySelected_BirthdayUser = (0, App.Settings.OwnBirthday);
+      } else if (index == unchecked((int)0xffffffff)) {
+        var birthdayUser = App.Settings.BirthdayUsers[previousIndex - 2];
+        CurrentlySelected_BirthdayUser = (previousIndex - 1, birthdayUser);
       } else {
         var birthdayUser = App.Settings.BirthdayUsers[index - 1];
         CurrentlySelected_BirthdayUser = ((index), birthdayUser);
@@ -162,7 +170,7 @@ namespace BirthdayNotifications {
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -171,7 +179,7 @@ namespace BirthdayNotifications {
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -180,25 +188,39 @@ namespace BirthdayNotifications {
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void AddUserButton_OnClick(object sender, RoutedEventArgs e) {
-
+      var tempBirthdayUser = BirthdayUser.Default;
+      App.Settings.BirthdayUsers.Add(tempBirthdayUser);
+      Model.UpdateUserList();
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void SubUserButton_OnClick(object sender, RoutedEventArgs e) {
+      if (CurrentlySelected_BirthdayUser.Item1 == 0) {
+        return;
+      }
+      var SelectedIndex = CurrentlySelected_BirthdayUser.Item1;
+      App.Settings.BirthdayUsers.RemoveAt(SelectedIndex - 1);
+      SelectedIndex = SelectedIndex - 1;
 
+      Model.UpdateUserList();
+      var MouseDevice = Mouse.PrimaryDevice;
+      Users.SelectedIndex = SelectedIndex;
+      ((ListBoxItem)Users.Items[SelectedIndex]).RaiseEvent(new MouseButtonEventArgs(MouseDevice, new TimeSpan(DateTime.Now.Ticks).Milliseconds, MouseButton.Left) { RoutedEvent = UIElement.MouseLeftButtonDownEvent, Source = Users });
+      ((ListBoxItem)Users.Items[SelectedIndex]).IsSelected = true;
+      Users.ScrollIntoView(SelectedIndex);
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -207,7 +229,7 @@ namespace BirthdayNotifications {
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -216,21 +238,25 @@ namespace BirthdayNotifications {
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void BirthdayDatePicker_OnSelectedDatedChanged(object sender, RoutedEventArgs e) {
-      ChangeUserOption(CurrentlySelected_BirthdayUser.Item1, "Birthday", ((DatePicker) sender).SelectedDate);
+      ChangeUserOption(CurrentlySelected_BirthdayUser.Item1, "Birthday", ((DatePicker)sender).SelectedDate);
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void UserAvatarUpload_Click(object sender, RoutedEventArgs e) {
 
     }
-  }
+
+        private void Search_TextChanged(object sender, TextChangedEventArgs e) {
+
+        }
+    }
 }

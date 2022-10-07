@@ -18,6 +18,8 @@ using BirthdayNotifications.Utils;
 
 using MaterialDesignThemes.Wpf;
 
+using Windows.Devices.Geolocation;
+
 namespace BirthdayNotifications.Windows.ViewModel {
   class MainWindowViewModel : INotifyPropertyChanged {
     private readonly MainWindow _window;
@@ -26,7 +28,8 @@ namespace BirthdayNotifications.Windows.ViewModel {
     public MainWindowViewModel(MainWindow window) {
       _window = window;
 
-      BirthdayUserList = LoadUserList();
+      UpdateUserList();
+
       _window.Users.SelectedIndex = 0;
     }
 
@@ -40,6 +43,10 @@ namespace BirthdayNotifications.Windows.ViewModel {
         }
       }
       return listBoxItems;
+    }
+
+    internal void UpdateUserList() {
+      BirthdayUserList = LoadUserList();
     }
 
     private static ListBoxItem CreateListBoxItem(string name) {

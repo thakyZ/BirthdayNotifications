@@ -21,48 +21,48 @@ namespace BirthdayNotifications {
   /// </summary>
   public partial class App : Application {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public const string REPO_URL = "https://github.com/thakyZ/BirthdayNotifications";
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     internal static BirthdayNotifSettings Settings;
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     private MainWindow _mainWindow;
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     internal static Cache Cache;
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     private bool CheckOnly {
       get; set;
     } = false;
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     private bool NoClose {
       get; set;
     } = false;
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     private bool None {
       get; set;
     } = false;
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public App() {
       foreach (var arg in Environment.GetCommandLineArgs()) {
@@ -135,22 +135,24 @@ namespace BirthdayNotifications {
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
+#nullable enable
     private static void OnSerilogLogLine(object? sender, (string Line, LogEventLevel Level, DateTimeOffset TimeStamp, Exception Exception) e) {
       if (e.Exception == null)
         return;
     }
+#nullable disable
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     private static void SetupSettings() => Settings = BirthdayNotifSettings.Load(GetConfigPath());
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="finishUp"></param>
     private void OnUpdateCheckFinished(bool finishUp) {
@@ -172,7 +174,7 @@ namespace BirthdayNotifications {
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -183,7 +185,7 @@ namespace BirthdayNotifications {
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     private bool _useFullExceptionHandler = false;
 

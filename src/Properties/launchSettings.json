@@ -1,7 +1,8 @@
 {
   "profiles": {
     "BirthdayNotifications": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "nativeDebugging": true
     },
     "Debug -- Check Only": {
       "commandName": "Project",
