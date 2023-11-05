@@ -12,11 +12,11 @@ using Serilog;
 namespace BirthdayNotifications.Config.Parsers {
   internal class DateParser : JsonConverter<DateTimeOffset> {
     public override DateTimeOffset ReadJson(JsonReader reader, Type objectType, DateTimeOffset existingValue, bool hasExistingValue, JsonSerializer serializer) {
-      if (reader.Value is string) {
-        Log.Information((string)reader.Value);
-        return DateTimeOffset.ParseExact((string)reader.Value, "yyyy-MM-dd", new System.Globalization.CultureInfo("en-US"));
-      } else if (reader.Value is long) {
-        return DateTimeOffset.FromUnixTimeSeconds((long)reader.Value);
+      if (reader.Value is string stringValue) {
+        Log.Debug("DateTimeOffset JsonValue String: {0}", stringValue);
+        return DateTimeOffset.ParseExact(stringValue, "yyyy-MM-dd", new System.Globalization.CultureInfo("en-US"));
+      } else if (reader.Value is long longValue) {
+        return DateTimeOffset.FromUnixTimeSeconds(longValue);
       } else {
         return DateTimeOffset.FromUnixTimeSeconds(0);
       }

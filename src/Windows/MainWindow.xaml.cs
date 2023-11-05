@@ -31,19 +31,17 @@ namespace BirthdayNotifications {
   /// </summary>
   public partial class MainWindow : Window {
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
-#pragma warning disable CS8603 // Possible null reference return.
-    private MainWindowViewModel Model => DataContext as MainWindowViewModel;
-#pragma warning restore CS8603 // Possible null reference return.
+    private MainWindowViewModel Model => (DataContext as MainWindowViewModel)!;
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     internal (int, BirthdayUser) CurrentlySelected_BirthdayUser = (0, BirthdayUser.Default);
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     public MainWindow() {
       InitializeComponent();
@@ -62,21 +60,20 @@ namespace BirthdayNotifications {
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     private const int CURRENT_VERSION_LEVEL = 0;
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     private static void SetDefaults() {
-
       // Clean up invalid addons
       if (App.Settings.BirthdayUsers.Count < 1 || (App.Settings.BirthdayUsers.Count == 1 && App.Settings.BirthdayUsers[0] == BirthdayUser.Default))
         App.Settings.BirthdayUsers = App.Settings.BirthdayUsers.Where(x => x.BirthdayUnix.ToUnixTimeMilliseconds() != 0).ToList();
 
-      var versionLevel = App.Settings.ConfigVersion.GetValueOrDefault(0);
+      var versionLevel = App.Settings.ConfigVersion ?? 0;
 
       while (versionLevel < CURRENT_VERSION_LEVEL) {
         // If not newer version
@@ -99,7 +96,7 @@ namespace BirthdayNotifications {
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     public void Initialize() {
 #if DEBUG
@@ -118,6 +115,9 @@ namespace BirthdayNotifications {
       Activate();
     }
 
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
     private static void ChangeUserOption(int index, string property, object value) {
       BirthdayUser user = BirthdayUser.Default;
       if (index == 0) {
@@ -126,9 +126,7 @@ namespace BirthdayNotifications {
         try {
           user = App.Settings.BirthdayUsers[index - 1];
         } catch (Exception e) {
-          Log.Error($"Could not edit birthday of user by index of: {index - 1}");
-          Log.Error(e.Message);
-          Log.Error(e.StackTrace);
+          Log.Error("Could not edit birthday of user by index of: {0}\n{1}\n{2}", index - 1, e.Message, e.StackTrace);
         }
       }
       switch (property) {
@@ -150,19 +148,22 @@ namespace BirthdayNotifications {
       }
     }
 
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
     private void AnyListBox_Selected(object sender, RoutedEventArgs e) {
       var index = ((ListBox)sender).SelectedIndex;
       if (index == 0) {
         CurrentlySelected_BirthdayUser = (0, App.Settings.OwnBirthday);
       } else {
         var birthdayUser = App.Settings.BirthdayUsers[index - 1];
-        CurrentlySelected_BirthdayUser = ((index), birthdayUser);
+        CurrentlySelected_BirthdayUser = (index, birthdayUser);
       }
       Model.UpdateSelectedBirthdayUser();
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -171,7 +172,7 @@ namespace BirthdayNotifications {
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -180,34 +181,32 @@ namespace BirthdayNotifications {
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void AddUserButton_OnClick(object sender, RoutedEventArgs e) {
-
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void SubUserButton_OnClick(object sender, RoutedEventArgs e) {
-
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void IsEnabledCheckbox_OnClick(object sender, RoutedEventArgs e) {
-      ChangeUserOption(CurrentlySelected_BirthdayUser.Item1, "Enabled", ((CheckBox)sender).IsChecked);
+      ChangeUserOption(CurrentlySelected_BirthdayUser.Item1, "Enabled", ((CheckBox)sender).IsChecked ?? throw new NullReferenceException("CheckBox state returned null."));
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -216,21 +215,20 @@ namespace BirthdayNotifications {
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void BirthdayDatePicker_OnSelectedDatedChanged(object sender, RoutedEventArgs e) {
-      ChangeUserOption(CurrentlySelected_BirthdayUser.Item1, "Birthday", ((DatePicker) sender).SelectedDate);
+      ChangeUserOption(CurrentlySelected_BirthdayUser.Item1, "Birthday", ((DatePicker) sender).SelectedDate ?? throw new NullReferenceException("Selected date returned null."));
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void UserAvatarUpload_Click(object sender, RoutedEventArgs e) {
-
     }
   }
 }

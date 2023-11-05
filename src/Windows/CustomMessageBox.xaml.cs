@@ -16,7 +16,6 @@ using MaterialDesignThemes.Wpf;
 
 using Serilog;
 
-
 namespace BirthdayNotifications.Windows {
   /// <summary>
   /// Interaction logic for CustomMessageBox.xaml
@@ -24,9 +23,7 @@ namespace BirthdayNotifications.Windows {
   public partial class CustomMessageBox : Window {
     private readonly Builder _builder;
     private MessageBoxResult _result;
-#pragma warning disable CS8603 // Possible null reference return.
-    private CustomMessageBoxViewModel ViewModel => DataContext as CustomMessageBoxViewModel;
-#pragma warning restore CS8603 // Possible null reference return.
+    private CustomMessageBoxViewModel ViewModel => (DataContext as CustomMessageBoxViewModel)!;
 
     public const string ErrorExplanation = "An error in Birthday Notifications occurred. If this issue persists, please report\r\nit on GitHub by clicking the button below, describing the issue and copying the text in the box.";
 
@@ -38,7 +35,7 @@ namespace BirthdayNotifications.Windows {
 
       DataContext = new CustomMessageBoxViewModel();
 
-      ViewModel.CopyMessageTextCommand = new SyncCommand(p => Clipboard.SetText(_builder.Text));
+      ViewModel.CopyMessageTextCommand = new SyncCommand(_ => Clipboard.SetText(_builder.Text));
 
       if (builder.ParentWindow?.IsVisible ?? false) {
         Owner = builder.ParentWindow;
@@ -50,9 +47,9 @@ namespace BirthdayNotifications.Windows {
       Title = builder.Caption;
       MessageTextBlock.Text = builder.Text;
 
-      if (string.IsNullOrWhiteSpace(builder.Description))
+      if (string.IsNullOrWhiteSpace(builder.Description)) {
         DescriptionTextBox.Visibility = Visibility.Collapsed;
-      else {
+      } else {
         DescriptionTextBox.Document.Blocks.Clear();
         DescriptionTextBox.Document.Blocks.Add(new System.Windows.Documents.Paragraph(new System.Windows.Documents.Run(builder.Description)));
       }
@@ -64,7 +61,7 @@ namespace BirthdayNotifications.Windows {
           Button3.Visibility = Visibility.Collapsed;
           _ = (builder.DefaultResult switch {
             MessageBoxResult.OK => Button1,
-            _ => throw new ArgumentOutOfRangeException(nameof(builder.DefaultResult).ToString(), builder.DefaultResult, null),
+            _ => throw new ArgumentOutOfRangeException(nameof(builder), builder.DefaultResult, null),
           }).Focus();
           break;
         case MessageBoxButton.OKCancel:
@@ -74,7 +71,7 @@ namespace BirthdayNotifications.Windows {
           _ = (builder.DefaultResult switch {
             MessageBoxResult.OK => Button1,
             MessageBoxResult.Cancel => Button2,
-            _ => throw new ArgumentOutOfRangeException(nameof(builder.DefaultResult).ToString(), builder.DefaultResult, null),
+            _ => throw new ArgumentOutOfRangeException(nameof(builder), builder.DefaultResult, null),
           }).Focus();
           break;
         case MessageBoxButton.YesNoCancel:
@@ -85,7 +82,7 @@ namespace BirthdayNotifications.Windows {
             MessageBoxResult.Yes => Button1,
             MessageBoxResult.No => Button2,
             MessageBoxResult.Cancel => Button3,
-            _ => throw new ArgumentOutOfRangeException(nameof(builder.DefaultResult).ToString(), builder.DefaultResult, null),
+            _ => throw new ArgumentOutOfRangeException(nameof(builder), builder.DefaultResult, null),
           }).Focus();
           break;
         case MessageBoxButton.YesNo:
@@ -95,11 +92,11 @@ namespace BirthdayNotifications.Windows {
           _ = (builder.DefaultResult switch {
             MessageBoxResult.Yes => Button1,
             MessageBoxResult.No => Button2,
-            _ => throw new ArgumentOutOfRangeException(nameof(builder.DefaultResult).ToString(), builder.DefaultResult, null),
+            _ => throw new ArgumentOutOfRangeException(nameof(builder), builder.DefaultResult, null),
           }).Focus();
           break;
         default:
-          throw new ArgumentOutOfRangeException(nameof(builder.Buttons).ToString(), builder.Buttons, null);
+          throw new ArgumentOutOfRangeException(nameof(builder), builder.Buttons, null);
       }
 
       switch (builder.Image) {
@@ -131,7 +128,7 @@ namespace BirthdayNotifications.Windows {
           SystemSounds.Asterisk.Play();
           break;
         default:
-          throw new ArgumentOutOfRangeException(nameof(builder.Image).ToString(), builder.Image, null);
+          throw new ArgumentOutOfRangeException(nameof(builder), builder.Image, null);
       }
 
       NewGitHubIssueButton.Visibility = builder.ShowNewGitHubIssue ? Visibility.Visible : Visibility.Collapsed;
@@ -336,7 +333,7 @@ namespace BirthdayNotifications.Windows {
       }
 
       public static Builder NewFrom(string text) => new Builder().WithText(text);
-      public static Builder NewFrom(Exception exc, string context, ExitOnCloseModes exitOnCloseMode = ExitOnCloseModes.DontExitOnClose) {
+      public static Builder NewFrom(Exception exception, string context, ExitOnCloseModes exitOnCloseMode = ExitOnCloseModes.DontExitOnClose) {
         var builder = new Builder()
                     .WithText(ErrorExplanation)
                     .WithExitOnClose(exitOnCloseMode)
@@ -344,7 +341,7 @@ namespace BirthdayNotifications.Windows {
                     .WithShowHelpLinks(true)
                     .WithShowDiscordLink(true)
                     .WithShowNewGitHubIssue(true)
-                    .WithAppendDescription(exc.ToString())
+                    .WithAppendDescription(exception.ToString())
                     .WithAppendSettingsDescription(context);
 
         if (exitOnCloseMode == ExitOnCloseModes.ExitOnClose) {
@@ -356,10 +353,10 @@ namespace BirthdayNotifications.Windows {
         return builder;
       }
 
-      public static Builder NewFromUnexpectedException(Exception exc, string context, ExitOnCloseModes exitOnCloseMode = ExitOnCloseModes.DontExitOnClose) {
-        return NewFrom(exc, context, exitOnCloseMode)
+      public static Builder NewFromUnexpectedException(Exception exception, string context, ExitOnCloseModes exitOnCloseMode = ExitOnCloseModes.DontExitOnClose) {
+        return NewFrom(exception, context, exitOnCloseMode)
             .WithAppendTextFormatted("Unexpected error has occurred. ({0})",
-                exc.Message)
+                exception.Message)
             .WithAppendText("\n")
             .WithAppendText("Please report this error.");
       }
@@ -393,7 +390,7 @@ namespace BirthdayNotifications.Windows {
         newWindowThread.IsBackground = true;
         newWindowThread.Start();
         newWindowThread.Join();
-        return res.GetValueOrDefault(CancelResult);
+        return res ?? CancelResult;
       }
 
       public MessageBoxResult ShowMessageBox() {
@@ -412,7 +409,7 @@ namespace BirthdayNotifications.Windows {
           Log.CloseAndFlush();
           if (result == MessageBoxResult.Yes) {
             var fileName = Process.GetCurrentProcess().MainModule?.FileName;
-            _ = Process.Start(fileName is not null ? fileName : "Birthday Notifications", string.Join(" ", Environment.GetCommandLineArgs().Skip(1).Select(x => EncodeParameterArgument(x))));
+            _ = Process.Start(fileName ?? "Birthday Notifications", string.Join(" ", Environment.GetCommandLineArgs().Skip(1).Select(x => EncodeParameterArgument(x))));
           }
           Environment.Exit(-1);
         }

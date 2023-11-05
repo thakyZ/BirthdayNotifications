@@ -25,38 +25,48 @@ using Windows.Media.Audio;
 namespace BirthdayNotifications.Utils {
   internal class Cache {
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     private static string CacheDirectory {
       get => Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BirthdayNotifications", "Cache");
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
-    private Dictionary<string, string> _ApplicationFileHash = new();
+    private Dictionary<string, string> _ApplicationFileHash { get; } = new();
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
-    public Action Finished;
+    public Action Finished { get; }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     private static bool Changed {
       get; set;
     } = false;
 
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
     internal Cache(Action finished) {
       Finished = finished;
       CheckChecksums();
     }
 
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
     internal Cache() {
+      Finished = new Action(() => Log.Warning("A Cache class created without an action specified."));
       CheckChecksums();
     }
 
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
     private void CreateChecksums() {
       using (var md5 = MD5.Create()) {
         var stream = new MemoryStream();
@@ -73,8 +83,9 @@ namespace BirthdayNotifications.Utils {
           using (var avatarStream = new MemoryStream(Convert.FromBase64String(birthdayUser.UserAvatar.Data.Substring("data:image/png;base64,".Length)))) {
             if (string.IsNullOrEmpty(birthdayUser.UserAvatar.Name) || string.IsNullOrWhiteSpace(birthdayUser.UserAvatar.Name)) {
               birthdayUser.UserAvatar.Name = ReturnFileName(birthdayUser.Name);
-              if (App.Settings.BirthdayUsers.Find(b => b.Name == birthdayUser.Name) is not null && App.Settings.BirthdayUsers.Find(b => b.Name == birthdayUser.Name).UserAvatar is not null) {
-                App.Settings.BirthdayUsers.Find(b => b.Name == birthdayUser.Name).UserAvatar.Name = birthdayUser.UserAvatar.Name;
+              var find = App.Settings.BirthdayUsers.Find(b => b.Name == birthdayUser.Name);
+              if (find?.UserAvatar is not null) {
+                find.UserAvatar.Name = birthdayUser.UserAvatar.Name;
                 Changed = true;
               }
             }
@@ -88,6 +99,9 @@ namespace BirthdayNotifications.Utils {
       }
     }
 
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
     private static string ReturnFileName(string name) {
       foreach (char c in System.IO.Path.GetInvalidFileNameChars()) {
         name = name.Replace(c, '_');
@@ -99,6 +113,9 @@ namespace BirthdayNotifications.Utils {
       return name;
     }
 
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
     private static Dictionary<string, string> LoadChecksums() {
       var tempData = new Dictionary<string, string>();
       using (var md5 = MD5.Create()) {
@@ -111,18 +128,22 @@ namespace BirthdayNotifications.Utils {
       return tempData;
     }
 
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
     private static bool CreateCacheFolder() {
       try {
         _ = Directory.CreateDirectory(CacheDirectory);
         return true;
       } catch (Exception e) {
-        Log.Error("Failed to create cache directory");
-        Log.Error(e.Message);
-        Log.Error(e.StackTrace);
+        Log.Error("Failed to create cache directory\n{0}\n{1}", e.Message, e.StackTrace);
         return false;
       }
     }
 
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
     private void CheckChecksums() {
       CreateChecksums();
       if (!CreateCacheFolder()) {
@@ -131,7 +152,7 @@ namespace BirthdayNotifications.Utils {
       }
       var loadedChecksums = LoadChecksums();
       foreach (var (filename, hash) in _ApplicationFileHash) {
-        if (loadedChecksums.Keys.Contains(filename) && hash.Equals(loadedChecksums[filename])) {
+        if (loadedChecksums.TryGetValue(filename, out string? value) && hash.Equals(loadedChecksums[filename], StringComparison.Ordinal)) {
           continue;
         }
         if (filename == "birthdaycat.png") {
@@ -140,11 +161,12 @@ namespace BirthdayNotifications.Utils {
           }
         }
       }
-      if (Finished is not null) {
-        Finished.Invoke();
-      }
+      Finished?.Invoke();
     }
 
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
     public static void SetCacheFile(BirthdayUser birthdayUser, string file) {
       var filename = ReturnFileName(birthdayUser.Name);
       byte[] manipulate;
@@ -157,12 +179,13 @@ namespace BirthdayNotifications.Utils {
           Data = $"data:image/png;base64,{Convert.ToBase64String(manipulate)}"
         };
       } catch (Exception e) {
-        Log.Error($"Failed to write to file: {new Uri(Path.Join(CacheDirectory, filename)).AbsolutePath}");
-        Log.Error(e.Message);
-        Log.Error(e.StackTrace);
+        Log.Error("Failed to write to file: {0}\n{1}\n{2}", new Uri(Path.Join(CacheDirectory, filename)).AbsolutePath, e.Message, e.StackTrace);
       }
     }
 
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
     private static byte[] ManipulateFile(string file, string stream) {
       using (MemoryStream stream2 = new MemoryStream(File.ReadAllBytes(file))) {
         var bi3 = new Bitmap(stream2);
@@ -198,8 +221,10 @@ namespace BirthdayNotifications.Utils {
       }
     }
 
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
     private static ImageCodecInfo GetEncoder(ImageFormat format) {
-
       ImageCodecInfo[] codecs = ImageCodecInfo.GetImageDecoders();
 
       foreach (ImageCodecInfo codec in codecs) {
@@ -207,9 +232,13 @@ namespace BirthdayNotifications.Utils {
           return codec;
         }
       }
-      return null;
+
+      return codecs[0];
     }
 
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
     public static string GetCacheFile(string fileObject) {
       if (fileObject.Equals("birthdaycat")) {
         return Path.Join(CacheDirectory, "birthdaycat.png");
@@ -217,7 +246,7 @@ namespace BirthdayNotifications.Utils {
         if (File.Exists(Path.Join(CacheDirectory, fileObject))) {
           return Path.Join(CacheDirectory, fileObject);
         } else {
-          Log.Error($"Cached file, {fileObject}, somehow missing.");
+          Log.Error("Cached file, {0}, somehow missing.", fileObject);
         }
       }
       return string.Empty;

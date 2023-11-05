@@ -14,6 +14,7 @@ using BirthdayNotifications.Config;
 using BirthdayNotifications.Utils;
 using BirthdayNotifications.Windows;
 using System.IO;
+using System.Diagnostics.CodeAnalysis;
 
 namespace BirthdayNotifications {
   /// <summary>
@@ -21,52 +22,56 @@ namespace BirthdayNotifications {
   /// </summary>
   public partial class App : Application {
     /// <summary>
-    /// 
+    /// Specifies the application's repository url.
     /// </summary>
-    public const string REPO_URL = "https://github.com/thakyZ/BirthdayNotifications";
+    public const string REPO_URL = "https://github.com/thakyZ/BirthdayNotifications"; // "${RepositoryUrl}";
 
     /// <summary>
-    /// 
+    /// Static instance of the BirthdayNotifSettings class.
     /// </summary>
-    internal static BirthdayNotifSettings Settings;
+    [AllowNull]
+    [NotNull]
+    internal static Settings Settings { get; private set; }
 
     /// <summary>
-    /// 
+    /// Instance of the MainWindow class.
     /// </summary>
-    private MainWindow _mainWindow;
+    private static MainWindow? _mainWindow { get; set; }
 
     /// <summary>
-    /// 
+    /// Static instance of the Cache class.
     /// </summary>
-    internal static Cache Cache;
+    [AllowNull]
+    [NotNull]
+    internal static Cache Cache { get; private set; }
 
     /// <summary>
-    /// 
+    /// CommandLine Option
     /// </summary>
     private bool CheckOnly {
       get; set;
     } = false;
 
     /// <summary>
-    /// 
+    /// CommandLine Option
     /// </summary>
     private bool NoClose {
       get; set;
     } = false;
 
     /// <summary>
-    /// 
+    /// CommandLine Option
     /// </summary>
     private bool None {
       get; set;
     } = false;
 
     /// <summary>
-    /// 
+    /// The program's main function
     /// </summary>
     public App() {
       foreach (var arg in Environment.GetCommandLineArgs()) {
-        if (arg.StartsWith("--check", StringComparison.Ordinal)) {
+        if (arg.StartsWith("--check", StringComparison.Ordinal) ) {
           CheckOnly = true;
         }
         if (arg.StartsWith("--noClose", StringComparison.Ordinal) && CheckOnly) {
@@ -115,7 +120,7 @@ namespace BirthdayNotifications {
         SetupSettings();
       }
 
-      Log.Information($"Birthday Notifications started as {release}");
+      Log.Information("Birthday Notifications started as {Release}", release);
 
       if (!EnvironmentVars.BN_DEBUG) {
         if (CheckOnly) {
@@ -128,29 +133,32 @@ namespace BirthdayNotifications {
         Birthdays _birthdays = new Birthdays();
         Cache = new Cache(() => _birthdays.CheckBirthdays());
       }
-    }
 
+      if (CheckOnly) {
+        _mainWindow = (MainWindow)MainWindow;
+      }
+    }
     private static void DoShutdown() {
       Current.Shutdown();
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private static void OnSerilogLogLine(object? sender, (string Line, LogEventLevel Level, DateTimeOffset TimeStamp, Exception Exception) e) {
-      if (e.Exception == null)
+    private static void OnSerilogLogLine(object? sender, (string Line, LogEventLevel Level, DateTimeOffset TimeStamp, Exception? Exception) e) {
+      if (e.Exception is null)
         return;
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
-    private static void SetupSettings() => Settings = BirthdayNotifSettings.Load(GetConfigPath());
+    private static void SetupSettings() => Settings = Settings.Load(GetConfigPath());
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     /// <param name="finishUp"></param>
     private void OnUpdateCheckFinished(bool finishUp) {
@@ -172,22 +180,25 @@ namespace BirthdayNotifications {
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void TaskSchedulerOnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e) {
+    private void TaskSchedulerOnUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e) {
       if (!e.Observed) {
         EarlyInitExceptionHandler(sender, new UnhandledExceptionEventArgs(e.Exception, true));
       }
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     private bool _useFullExceptionHandler = false;
 
-    private void EarlyInitExceptionHandler(object sender, UnhandledExceptionEventArgs e) {
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
+    private void EarlyInitExceptionHandler(object? sender, UnhandledExceptionEventArgs e) {
       this.Dispatcher.Invoke(() => {
         Log.Error((Exception)e.ExceptionObject, "Unhandled exception");
 
@@ -206,9 +217,15 @@ namespace BirthdayNotifications {
       });
     }
 
-    private static string GetConfigPath() => Path.Combine(AppUtils.GetInstanceDirectory(), $"config.json");
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
+    private static string GetConfigPath() => Path.Combine(AppUtils.GetInstanceDirectory(), "config.json");
 
-    private void App_OnStartup(object sender, StartupEventArgs e) {
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
+    private void App_OnStartup(object? sender, StartupEventArgs e) {
       var check = true;
       Log.Verbose("Loading MainWindow...");
 

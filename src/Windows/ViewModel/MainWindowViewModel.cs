@@ -18,16 +18,20 @@ using BirthdayNotifications.Utils;
 
 using MaterialDesignThemes.Wpf;
 
+using Serilog;
+
 namespace BirthdayNotifications.Windows.ViewModel {
   class MainWindowViewModel : INotifyPropertyChanged {
     private readonly MainWindow _window;
-    public Action Activate;
+    public Action Activate { get; }
 
     public MainWindowViewModel(MainWindow window) {
       _window = window;
 
       BirthdayUserList = LoadUserList();
       _window.Users.SelectedIndex = 0;
+
+      Activate ??= new Action(() => Log.Warning("A MainWindowViewModel class was implemented without an Activate action specified."));
     }
 
     private static ObservableCollection<ListBoxItem> LoadUserList() {
@@ -59,7 +63,11 @@ namespace BirthdayNotifications.Windows.ViewModel {
       SetCurrentAvatar(_window.CurrentlySelected_BirthdayUser.Item2.UserAvatar);
     }
 
-    private void SetCurrentAvatar(Avatar avatar) {
+    private void SetCurrentAvatar(Avatar? avatar) {
+      if (avatar is null) {
+        return;
+      }
+
       var bi3 = new BitmapImage();
       bi3.BeginInit();
       bi3.UriSource = Birthdays.GetUserAvatar(avatar);
@@ -67,21 +75,21 @@ namespace BirthdayNotifications.Windows.ViewModel {
       CurrentUser_Avatar = bi3;
     }
 
-    internal void OnWindowClosed(object sender, EventArgs args) {
+    internal void OnWindowClosed(object? sender, EventArgs args) {
       Application.Current.Shutdown();
     }
 
-    internal void OnWindowClosing(object sender, CancelEventArgs args) {
+    internal void OnWindowClosing(object? sender, CancelEventArgs args) {
       // Method intentionally left empty.
     }
 
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     private void OnPropertyChanged([CallerMemberName][AllowNull] string propertyName = null) {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    private ObservableCollection<ListBoxItem> _birthdayUserList;
+    private ObservableCollection<ListBoxItem> _birthdayUserList = new();
     public ObservableCollection<ListBoxItem> BirthdayUserList {
       get => _birthdayUserList;
       set {
@@ -97,7 +105,7 @@ namespace BirthdayNotifications.Windows.ViewModel {
         OnPropertyChanged(nameof(CurrentUser_IsEnabled));
       }
     }
-    private string _currentUser_name;
+    private string _currentUser_name = string.Empty;
     public string CurrentUser_Name {
       get => _currentUser_name;
       set {
@@ -113,8 +121,8 @@ namespace BirthdayNotifications.Windows.ViewModel {
         OnPropertyChanged(nameof(CurrentUser_BirthDate));
       }
     }
-    private ImageSource _currentUser_avatar;
-    public ImageSource CurrentUser_Avatar {
+    private ImageSource? _currentUser_avatar;
+    public ImageSource? CurrentUser_Avatar {
       get => _currentUser_avatar;
       set {
         _currentUser_avatar = value;

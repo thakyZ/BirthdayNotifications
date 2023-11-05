@@ -12,6 +12,7 @@ namespace BirthdayNotifications.Windows.ViewModel {
     }
 
     public CustomMessageBoxViewModel() {
+      CopyMessageTextCommand ??= new RoutedCommand();
     }
   }
 }

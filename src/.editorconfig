@@ -3,23 +3,56 @@
 # Core EditorConfig Options   #
 ###############################
 root = true
+
 # All files
 [*]
 indent_style = space
+vsspell_section_id = 053a0a99a398444aa3cfc45fa4adb21f
+vsspell_spell_check_as_you_type = false
+vsspell_include_in_project_spell_check = true
+vsspell_code_analyzers_enabled = true
+vsspell_detect_doubled_words = true
+vsspell_ignore_words_in_all_uppercase = false
+vsspell_ignore_words_in_mixed_case = false
+vsspell_ignore_format_specifiers = true
+vsspell_ignore_filenames_and_email_addresses = true
+vsspell_ignore_xml_elements_in_text = true
+vsspell_treat_underscore_as_separator = true
+vsspell_ignore_mnemonics = false
+vsspell_ignored_character_class = None
+vsspell_code_analyzer_ignore_identifier_if_all_uppercase = true
+vsspell_code_analyzer_ignore_identifiers_within_member_bodies = true
+vsspell_code_analyzer_ignore_type_parameters = true
+vsspell_code_analyzer_ignore_if_compiler_generated = true
+vsspell_code_analyzer_ignore_interpolated_strings = true
+vsspell_code_analyzer_apply_to_all_c_style_languages = true
+vsspell_dictionary_languages_053a0a99a398444aa3cfc45fa4adb21f = inherited,en-US
+vsspell_ignored_words_053a0a99a398444aa3cfc45fa4adb21f = serializer
+vsspell_ignored_keywords_053a0a99a398444aa3cfc45fa4adb21f = serializer
+vsspell_cad_import_code_analysis_dictionaries = true
+vsspell_cad_treat_unrecognized_words_as_misspelled = true
+vsspell_cad_treat_deprecated_terms_as_misspelled = false
+vsspell_cad_treat_compound_terms_as_misspelled = false
+vsspell_cad_treat_casing_exceptions_as_ignored_words = false
 
 # XML project files
 [*.{csproj,vbproj,vcxproj,vcxproj.filters,proj,projitems,shproj}]
 indent_size = 2
+tab_width = 2
 
 # XML config files
 [*.{props,targets,ruleset,config,nuspec,resx,vsixmanifest,vsct}]
 indent_size = 2
+tab_width = 2
 
 # Code files
 [*.{cs,csx,vb,vbx}]
 indent_size = 2
-insert_final_newline = true
+tab_width = 2
+insert_final_newline = false
 charset = utf-8-bom
+end_of_line = crlf
+
 ###############################
 # .NET Coding Conventions     #
 ###############################
@@ -54,12 +87,13 @@ dotnet_style_prefer_inferred_anonymous_type_member_names = true:suggestion
 dotnet_style_prefer_auto_properties = true:silent
 dotnet_style_prefer_conditional_expression_over_assignment = true:silent
 dotnet_style_prefer_conditional_expression_over_return = true:silent
+
 ###############################
 # Naming Conventions          #
 ###############################
 # Style Definitions
 dotnet_naming_style.pascal_case_style.capitalization             = pascal_case
-# Use PascalCase for constant fields  
+# Use PascalCase for constant fields
 dotnet_naming_rule.constant_fields_should_be_pascal_case.severity = suggestion
 dotnet_naming_rule.constant_fields_should_be_pascal_case.symbols  = constant_fields
 dotnet_naming_rule.constant_fields_should_be_pascal_case.style = pascal_case_style
@@ -67,8 +101,6 @@ dotnet_naming_symbols.constant_fields.applicable_kinds            = field
 dotnet_naming_symbols.constant_fields.applicable_accessibilities  = *
 dotnet_naming_symbols.constant_fields.required_modifiers          = const
 dotnet_style_operator_placement_when_wrapping = beginning_of_line
-tab_width = 2
-end_of_line = crlf
 dotnet_style_prefer_simplified_boolean_expressions = true:suggestion
 dotnet_style_prefer_simplified_interpolation = true:suggestion
 dotnet_style_prefer_compound_assignment = true:suggestion
@@ -76,6 +108,7 @@ dotnet_style_namespace_match_folder = true:suggestion
 dotnet_style_allow_multiple_blank_lines_experimental = false:silent
 dotnet_style_allow_statement_immediately_after_block_experimental = false:silent
 dotnet_code_quality_unused_parameters = non_public:suggestion
+
 ###############################
 # C# Coding Conventions       #
 ###############################
@@ -105,6 +138,7 @@ csharp_style_deconstructed_variable_declaration = true:suggestion
 csharp_prefer_simple_default_expression = true:suggestion
 csharp_style_pattern_local_over_anonymous_function = true:suggestion
 csharp_style_inlined_variable_declaration = true:suggestion
+
 ###############################
 # C# Formatting Rules         #
 ###############################
@@ -159,9 +193,8 @@ csharp_style_prefer_switch_expression = true:suggestion
 csharp_style_prefer_pattern_matching = false:silent
 csharp_style_prefer_not_pattern = true:suggestion
 csharp_style_prefer_extended_property_pattern = true:suggestion
-###############################
-# VB Coding Conventions       #
-###############################
+csharp_style_prefer_top_level_statements = false:warning
+csharp_style_prefer_primary_constructors = true:suggestion
 
 # S2933: Fields that are only assigned in the constructor should be "readonly"
 dotnet_diagnostic.S2933.severity = none
@@ -169,6 +202,5 @@ dotnet_diagnostic.S2933.severity = none
 # IDE0052: Remove unread private members
 dotnet_diagnostic.IDE0052.severity = none
 
-[*.vb]
-# Modifier preferences
-visual_basic_preferred_modifier_order = Partial,Default,Private,Protected,Public,Friend,NotOverridable,Overridable,MustOverride,Overloads,Overrides,MustInherit,NotInheritable,Static,Shared,Shadows,ReadOnly,WriteOnly,Dim,Const,WithEvents,Widening,Narrowing,Custom,Async:suggestion
+# NU1701: Package was restored using a different target framework instead of the project target framework. This package may not be fully compatible with your project.
+dotnet_diagnostic.NU1701.severity = silent

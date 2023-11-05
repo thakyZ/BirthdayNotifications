@@ -1,111 +1,61 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows10.0.19041.0</TargetFramework>
-    <Nullable>disable</Nullable>
-    <UseWPF>true</UseWPF>
+    <TargetFramework>net7.0-windows10.0.22621.0</TargetFramework>
+    <UseWPF>True</UseWPF>
     <Platforms>x64</Platforms>
     <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Dragablz" Version="0.0.3.223" />
-    <PackageReference Include="MaterialDesignThemes" Version="4.5.0" />
-    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.2.13" />
-    <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.2" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Dragablz" Version="0.0.3.234" />
+    <PackageReference Include="MaterialDesignThemes" Version="4.9.0" />
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.2.14" />
+    <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="squirrel.windows" Version="2.0.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Assets\BadgeLogo.scale-100.png" />
-    <Content Include="Assets\BadgeLogo.scale-125.png" />
-    <Content Include="Assets\BadgeLogo.scale-150.png" />
-    <Content Include="Assets\BadgeLogo.scale-200.png" />
-    <Content Include="Assets\BadgeLogo.scale-400.png" />
-    <Content Include="Assets\LargeTile.scale-200.png" />
-    <Content Include="Assets\SmallTile.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.scale-100.png" />
-    <Content Include="Assets\Square44x44Logo.scale-125.png" />
-    <Content Include="Assets\Square44x44Logo.scale-150.png" />
-    <Content Include="Assets\Square44x44Logo.scale-400.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-16.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-16_altform-lightunplated.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-16_altform-unplated.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-24.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-lightunplated.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-256.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-256_altform-lightunplated.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-256_altform-unplated.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-32.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-32_altform-lightunplated.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-32_altform-unplated.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-48.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-48_altform-lightunplated.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-48_altform-unplated.png" />
-    <Content Include="Assets\StoreLogo.scale-100.png" />
-    <Content Include="Assets\StoreLogo.scale-125.png" />
-    <Content Include="Assets\StoreLogo.scale-150.png" />
-    <Content Include="Assets\StoreLogo.scale-200.png" />
-    <Content Include="Assets\StoreLogo.scale-400.png" />
-    <Content Include="Assets\LockScreenLogo.scale-200.png" />
-    <Content Include="Assets\SplashScreen.scale-200.png" />
-    <Content Include="Assets\Square150x150Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <PackageReference Include="Clowd.Squirrel" Version="2.10.2" />
   </ItemGroup>
   <PropertyGroup>
-    <ApplicationIcon>Resources\birthdaynotification_icon.ico</ApplicationIcon>
+    <ApplicationIcon>$(ProjectDir)Resources\birthdaynotification_icon.ico</ApplicationIcon>
     <StartupObject>BirthdayNotifications.App</StartupObject>
     <AssemblyName>Birthday Notifications</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <PackageIcon>Resources\birthdaycat.png</PackageIcon>
+    <PackageIcon>$(ProjectDir)Resources\birthdaycat.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://github.com/thakyZ/BirthdayNotifications/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/thakyZ/BirthdayNotifications/</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>social</PackageTags>
     <PackageId>$(MSBuildProjectName.Replace(" ", "_"))</PackageId>
+    <BaseOutputPath>$(SolutionDir)..\bin\</BaseOutputPath>
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
-    <BaseOutputPath>..\bin\</BaseOutputPath>
+    <ImplicitUsings>Disable</ImplicitUsings>
+    <Nullable>Enable</Nullable>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <Title>Birthday Notifications</Title>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
   <!-- Assets -->
   <ItemGroup>
-    <Resource Include="Resources\*.*" />
+    <Content Include="$(ProjectDir)Assets\*.png" />
+    <Resource Include="$(ProjectDir)Resources\*.*" />
+    <None Remove="$(ProjectDir)Assets\LargeTile.scale-200.png" />
+    <None Remove="$(ProjectDir)Assets\SmallTile.scale-200.png" />
+    <None Include="$(SolutionDir)..\README.md" Pack="True" PackagePath="\" />
+    <None Include="$(SolutionDir).editorconfig" />
+    <None Include="C:\Users\thaky\Development\Git\CSharp\BirthdayNotifications\src\Utils\CommandLineParser\.editorconfig" />
+    <Compile Update="$(ProjectDir)Properties\Resources.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="Resources.resx" />
+    <EmbeddedResource Update="$(ProjectDir)Properties\Resources.resx" Generator="ResXFileCodeGenerator" LastGenOutput="Resources.Designer.cs" />
+    <None Update="$(ProjectDir)Resources\birthdaycat.png" Pack="True" PackagePath="\" />
+    <EditorConfigFiles Remove="$(SolutionDir).editorconfig" />
+    <EmbeddedResource Remove="$(ProjectDir)Resources\SR.resx" />
+    <Resource Update="$(ProjectDir)Resources\SR.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="SR.resx" />
+    <Resource Update="$(ProjectDir)Resources\SR.resx" Generator="ResXFileCodeGenerator" LastGenOutput="SR.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Assets\LargeTile.scale-200.png" />
-    <None Remove="Assets\SmallTile.scale-200.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-    <None Include="C:\Users\thaky\Development\Git\C#\BirthdayNotifications\src\.editorconfig" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="Resources\birthdaycat.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <EditorConfigFiles Remove="C:\Users\thaky\Development\Git\C#\BirthdayNotifications\src\.editorconfig" />
+    <EditorConfigFiles Remove="C:\Users\thaky\Development\Git\CSharp\BirthdayNotifications\src\Utils\CommandLineParser\.editorconfig" />
   </ItemGroup>
 </Project>

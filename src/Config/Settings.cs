@@ -15,10 +15,10 @@ using Serilog.Core;
 
 namespace BirthdayNotifications.Config {
   [Serializable]
-  public class BirthdayNotifSettings {
+  public class Settings {
     #region Birthday Notifications Setting
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     [JsonProperty("config_version")]
     public int? ConfigVersion {
@@ -26,14 +26,14 @@ namespace BirthdayNotifications.Config {
       internal set;
     } = 0;
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     [JsonProperty("birthday_users")]
     public List<BirthdayUser> BirthdayUsers {
       get; set;
     } = new List<BirthdayUser>();
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     [JsonProperty("own_birthday")]
     public BirthdayUser OwnBirthday {
@@ -42,18 +42,18 @@ namespace BirthdayNotifications.Config {
     #endregion
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     [JsonIgnore]
     private static string _configPath = "";
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     /// <param name="configPath"></param>
     /// <returns></returns>
-    private static BirthdayNotifSettings CreateDefault(string configPath) {
-      BirthdayNotifSettings config = new BirthdayNotifSettings {
+    private static Settings CreateDefault(string configPath) {
+      Settings config = new Settings {
         BirthdayUsers = new List<BirthdayUser>()
       };
       config.SaveConfig(configPath);
@@ -61,30 +61,29 @@ namespace BirthdayNotifications.Config {
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     /// <param name="configPath"></param>
     /// <returns></returns>
-    public static BirthdayNotifSettings Load(string configPath) {
+    public static Settings Load(string configPath) {
       _configPath = configPath;
-      BirthdayNotifSettings config;
+      Settings config;
       if (!File.Exists(configPath)) {
         Console.WriteLine($"Could not find configuration file at {configPath}");
-        Console.WriteLine($"Creating default configuration file");
-        config = CreateDefault(configPath);
-        return config;
+        Console.WriteLine("Creating default configuration file");
+        return CreateDefault(configPath);
       }
 
       using (StreamReader reader = File.OpenText(configPath)) {
-        BirthdayNotifSettings birthdayNotifSettings = JToken.ReadFromAsync(new JsonTextReader(reader)).Result.ToObject<BirthdayNotifSettings>();
-        config = birthdayNotifSettings is not null ? birthdayNotifSettings : CreateDefault(configPath);
+        Settings birthdayNotifSettings = JToken.ReadFromAsync(new JsonTextReader(reader)).Result.ToObject<Settings>() ?? throw new NullReferenceException("Settings reutned null.");
+        config = birthdayNotifSettings ?? CreateDefault(configPath);
       }
 
       return config;
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     /// <param name="configPath"></param>
     public void SaveConfig(string configPath) {
@@ -94,9 +93,7 @@ namespace BirthdayNotifications.Config {
           File.Copy(Path.GetFileName(configPath), $"{Path.GetFileNameWithoutExtension(configPath)}.backup.json");
         }
       } catch (Exception e) {
-        Log.Error("Failed to backup config file.");
-        Log.Error($"{e.Message}");
-        Log.Error($"{e.StackTrace}");
+        Log.Error("Failed to backup config file.\n{0}\n{1}", e.Message, e.StackTrace);
       }
       try {
         TextWriter tw = File.CreateText(configPath);
@@ -110,14 +107,12 @@ namespace BirthdayNotifications.Config {
         }
         tw.Close();
       } catch (Exception e) {
-        Log.Error($"Failed to write config to file: {configPath}");
-        Log.Error(e.Message);
-        Log.Error(e.StackTrace);
+        Log.Error("Failed to write config to file: {0}\n{1}\n{2}", configPath, e.Message, e.StackTrace);
       }
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     internal void SaveConfig() {
       SaveConfig(_configPath);
@@ -127,7 +122,7 @@ namespace BirthdayNotifications.Config {
   [Serializable]
   public class Avatar {
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     [JsonProperty("name", Order = 1, Required = Required.Always)]
     public string Name {
@@ -146,12 +141,12 @@ namespace BirthdayNotifications.Config {
   }
 
   /// <summary>
-  /// 
+  /// TODO: Descriptor
   /// </summary>
   [Serializable]
   public class BirthdayUser {
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     [JsonProperty("birthday", Order = 2, Required = Required.Always)]
     [JsonConverter(typeof(DateParser))]
@@ -160,7 +155,7 @@ namespace BirthdayNotifications.Config {
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     [JsonProperty("name", Order = 1, Required = Required.Always)]
     public string Name {
@@ -168,15 +163,15 @@ namespace BirthdayNotifications.Config {
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     [JsonProperty("avatar", Order = 3, Required = Required.AllowNull, NullValueHandling = NullValueHandling.Include)]
-    public Avatar UserAvatar {
+    public Avatar? UserAvatar {
       get; set;
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     [JsonProperty("enabled", Order = 4, Required = Required.Always)]
     public bool Enabled {
@@ -184,32 +179,32 @@ namespace BirthdayNotifications.Config {
     } = false;
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
-    /// <param name="birthdate"></param>
+    /// <param name="birthDate"></param>
     /// <param name="name"></param>
     /// <param name="avatarBase64"></param>
     [JsonConstructor]
-    public BirthdayUser(DateTimeOffset birthdate, string name, Avatar avatar = null) {
+    public BirthdayUser(DateTimeOffset birthDate, string name, Avatar? avatar = null) {
       Name = name;
-      BirthdayUnix = birthdate;
+      BirthdayUnix = birthDate;
       UserAvatar = avatar;
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
-    /// <param name="birthdate"></param>
+    /// <param name="birthDate"></param>
     /// <param name="name"></param>
     /// <param name="avatar"></param>
-    public BirthdayUser(long birthdate, string name, Avatar avatar = null) {
+    public BirthdayUser(long birthDate, string name, Avatar? avatar = null) {
       Name = name;
-      BirthdayUnix = DateTimeOffset.FromUnixTimeMilliseconds(birthdate);
+      BirthdayUnix = DateTimeOffset.FromUnixTimeMilliseconds(birthDate);
       UserAvatar = avatar;
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     /// <param name="birthdate"></param>
     /// <param name="name"></param>
@@ -221,7 +216,7 @@ namespace BirthdayNotifications.Config {
     }
 
     /// <summary>
-    /// 
+    /// TODO: Descriptor
     /// </summary>
     [JsonIgnore]
     public static BirthdayUser Default => new(0, "None", null);
