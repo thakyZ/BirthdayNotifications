@@ -3,24 +3,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Reflection;
-using System.Runtime.Intrinsics.X86;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-
-using ABI.Windows.ApplicationModel.Activation;
 
 using BirthdayNotifications.Config;
 using BirthdayNotifications.Properties;
 
 using Serilog;
-
-using Windows.Media.Audio;
 
 namespace BirthdayNotifications.Utils {
   internal class Cache {

@@ -15,8 +15,8 @@ namespace BirthdayNotifications.Utils {
     public static string AppId => "NekoBoiNick.BirthdayNotifications.App";
 
     /// <summary>
-    ///     Gets the git hash value from the assembly
-    ///     or null if it cannot be found.
+    /// Gets the git hash value from the assembly
+    /// or null if it cannot be found.
     /// </summary>
     public static string GetGitHash() {
       var asm = typeof(AppUtils).Assembly;
@@ -37,7 +37,10 @@ namespace BirthdayNotifications.Utils {
       return attribute.Value;
     }
 
-    public static string GetInstanceDirectory() {
+    public static string GetInstanceDirectory(bool createDefault = false) {
+      if (createDefault && !string.IsNullOrEmpty(App.AppSettings.ConfigDirectory)) {
+        return App.AppSettings.ConfigDirectory;
+      }
       var path = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BirthdayNotifications");
       if (!Directory.Exists(path)) {
         _ = Directory.CreateDirectory(path);

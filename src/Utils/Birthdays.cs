@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Windows;
 
 using BirthdayNotifications.Config;
 
@@ -9,7 +8,6 @@ using Microsoft.Toolkit.Uwp.Notifications;
 
 using Serilog;
 
-using Windows.Foundation.Collections;
 using Windows.UI.Notifications;
 
 namespace BirthdayNotifications.Utils {
@@ -89,7 +87,7 @@ namespace BirthdayNotifications.Utils {
           {
             whoes.Add(user);
           }
-       }
+        }
         return whoes;
       });
       return who.Count > 0 ? who : new();
