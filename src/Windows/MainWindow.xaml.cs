@@ -1,29 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Xml.Linq;
 
 using BirthdayNotifications.Config;
 using BirthdayNotifications.Utils;
 using BirthdayNotifications.Windows.ViewModel;
 
 using Serilog;
-
-using Windows.Networking.NetworkOperators;
-
-using static System.Net.Mime.MediaTypeNames;
 
 namespace BirthdayNotifications {
   /// <summary>
@@ -220,7 +204,7 @@ namespace BirthdayNotifications {
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void BirthdayDatePicker_OnSelectedDatedChanged(object sender, RoutedEventArgs e) {
-      ChangeUserOption(CurrentlySelected_BirthdayUser.Item1, "Birthday", ((DatePicker) sender).SelectedDate ?? throw new NullReferenceException("Selected date returned null."));
+      ChangeUserOption(CurrentlySelected_BirthdayUser.Item1, "Birthday", ((DatePicker)sender).SelectedDate ?? throw new NullReferenceException("Selected date returned null."));
     }
 
     /// <summary>

@@ -1,20 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
-using Newtonsoft.Json;
-using Serilog;
-using Serilog.Events;
 
 using BirthdayNotifications.Config;
 using BirthdayNotifications.Utils;
 using BirthdayNotifications.Windows;
-using System.IO;
-using System.Diagnostics.CodeAnalysis;
+
+using Serilog;
+using Serilog.Events;
 
 namespace BirthdayNotifications {
   /// <summary>
@@ -29,42 +24,35 @@ namespace BirthdayNotifications {
     /// <summary>
     /// Static instance of the BirthdayNotifSettings class.
     /// </summary>
-    [AllowNull]
-    [NotNull]
+    [AllowNull, NotNull]
     internal static Settings Settings { get; private set; }
 
     /// <summary>
     /// Instance of the MainWindow class.
     /// </summary>
-    private static MainWindow? _mainWindow { get; set; }
+    [AllowNull, NotNull]
+    private static MainWindow _mainWindow { get; set; }
 
     /// <summary>
     /// Static instance of the Cache class.
     /// </summary>
-    [AllowNull]
-    [NotNull]
+    [AllowNull, NotNull]
     internal static Cache Cache { get; private set; }
 
     /// <summary>
     /// CommandLine Option
     /// </summary>
-    private bool CheckOnly {
-      get; set;
-    } = false;
+    private bool CheckOnly { get; set; }
 
     /// <summary>
     /// CommandLine Option
     /// </summary>
-    private bool NoClose {
-      get; set;
-    } = false;
+    private bool NoClose { get; set; }
 
     /// <summary>
     /// CommandLine Option
     /// </summary>
-    private bool None {
-      get; set;
-    } = false;
+    private bool None { get; set; }
 
     /// <summary>
     /// The program's main function
@@ -132,10 +120,6 @@ namespace BirthdayNotifications {
       } else {
         Birthdays _birthdays = new Birthdays();
         Cache = new Cache(() => _birthdays.CheckBirthdays());
-      }
-
-      if (CheckOnly) {
-        _mainWindow = (MainWindow)MainWindow;
       }
     }
     private static void DoShutdown() {

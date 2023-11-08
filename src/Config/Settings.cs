@@ -1,44 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Navigation;
-
-using BirthdayNotifications.Config.Parsers;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using Serilog;
-using Serilog.Core;
 
 namespace BirthdayNotifications.Config {
+  /// <summary>
+  /// TODO: Descriptor
+  /// </summary>
   [Serializable]
   public class Settings {
     #region Birthday Notifications Setting
     /// <summary>
     /// TODO: Descriptor
     /// </summary>
-    [JsonProperty("config_version")]
-    public int? ConfigVersion {
-      get;
-      internal set;
-    } = 0;
+    [JsonProperty("config_version", Order = 1, Required = Required.Always)]
+    public int? ConfigVersion { get; internal set; } = 0;
     /// <summary>
     /// TODO: Descriptor
     /// </summary>
-    [JsonProperty("birthday_users")]
-    public List<BirthdayUser> BirthdayUsers {
-      get; set;
-    } = new List<BirthdayUser>();
+    [JsonProperty("birthday_users", Order = 3, Required = Required.Always)]
+    public List<BirthdayUser> BirthdayUsers { get; set; } = new List<BirthdayUser>();
+
     /// <summary>
     /// TODO: Descriptor
     /// </summary>
-    [JsonProperty("own_birthday")]
-    public BirthdayUser OwnBirthday {
-      get; set;
-    } = BirthdayUser.Default;
+    [JsonProperty("own_birthday", Order = 2, Required = Required.Always)]
+    public BirthdayUser OwnBirthday { get; set; } = BirthdayUser.Default;
     #endregion
 
     /// <summary>
@@ -47,6 +38,7 @@ namespace BirthdayNotifications.Config {
     [JsonIgnore]
     private static string _configPath = "";
 
+    #region Methods
     /// <summary>
     /// TODO: Descriptor
     /// </summary>
@@ -63,8 +55,8 @@ namespace BirthdayNotifications.Config {
     /// <summary>
     /// TODO: Descriptor
     /// </summary>
-    /// <param name="configPath"></param>
-    /// <returns></returns>
+    /// <param name="configPath">Path to the config on the file system</param>
+    /// <returns>An instanced Settings class</returns>
     public static Settings Load(string configPath) {
       _configPath = configPath;
       Settings config;
@@ -85,7 +77,7 @@ namespace BirthdayNotifications.Config {
     /// <summary>
     /// TODO: Descriptor
     /// </summary>
-    /// <param name="configPath"></param>
+    /// <param name="configPath">Path to the config on the file system</param>
     public void SaveConfig(string configPath) {
       var config = this;
       try {
@@ -117,108 +109,6 @@ namespace BirthdayNotifications.Config {
     internal void SaveConfig() {
       SaveConfig(_configPath);
     }
-  }
-
-  [Serializable]
-  public class Avatar {
-    /// <summary>
-    /// TODO: Descriptor
-    /// </summary>
-    [JsonProperty("name", Order = 1, Required = Required.Always)]
-    public string Name {
-      get; set;
-    }
-
-    [JsonProperty("data", Order = 2, Required = Required.Always)]
-    public string Data {
-      get; set;
-    }
-
-    public Avatar(string name = "", string data = "") {
-      Name = name;
-      Data = data;
-    }
-  }
-
-  /// <summary>
-  /// TODO: Descriptor
-  /// </summary>
-  [Serializable]
-  public class BirthdayUser {
-    /// <summary>
-    /// TODO: Descriptor
-    /// </summary>
-    [JsonProperty("birthday", Order = 2, Required = Required.Always)]
-    [JsonConverter(typeof(DateParser))]
-    public DateTimeOffset BirthdayUnix {
-      get; set;
-    }
-
-    /// <summary>
-    /// TODO: Descriptor
-    /// </summary>
-    [JsonProperty("name", Order = 1, Required = Required.Always)]
-    public string Name {
-      get; set;
-    }
-
-    /// <summary>
-    /// TODO: Descriptor
-    /// </summary>
-    [JsonProperty("avatar", Order = 3, Required = Required.AllowNull, NullValueHandling = NullValueHandling.Include)]
-    public Avatar? UserAvatar {
-      get; set;
-    }
-
-    /// <summary>
-    /// TODO: Descriptor
-    /// </summary>
-    [JsonProperty("enabled", Order = 4, Required = Required.Always)]
-    public bool Enabled {
-      get; set;
-    } = false;
-
-    /// <summary>
-    /// TODO: Descriptor
-    /// </summary>
-    /// <param name="birthDate"></param>
-    /// <param name="name"></param>
-    /// <param name="avatarBase64"></param>
-    [JsonConstructor]
-    public BirthdayUser(DateTimeOffset birthDate, string name, Avatar? avatar = null) {
-      Name = name;
-      BirthdayUnix = birthDate;
-      UserAvatar = avatar;
-    }
-
-    /// <summary>
-    /// TODO: Descriptor
-    /// </summary>
-    /// <param name="birthDate"></param>
-    /// <param name="name"></param>
-    /// <param name="avatar"></param>
-    public BirthdayUser(long birthDate, string name, Avatar? avatar = null) {
-      Name = name;
-      BirthdayUnix = DateTimeOffset.FromUnixTimeMilliseconds(birthDate);
-      UserAvatar = avatar;
-    }
-
-    /// <summary>
-    /// TODO: Descriptor
-    /// </summary>
-    /// <param name="birthdate"></param>
-    /// <param name="name"></param>
-    /// <param name="avatarBase64"></param>
-    public BirthdayUser() {
-      Name = Default.Name;
-      BirthdayUnix = Default.BirthdayUnix;
-      UserAvatar = Default.UserAvatar;
-    }
-
-    /// <summary>
-    /// TODO: Descriptor
-    /// </summary>
-    [JsonIgnore]
-    public static BirthdayUser Default => new(0, "None", null);
+    #endregion
   }
 }

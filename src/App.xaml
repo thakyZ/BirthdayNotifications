@@ -1,9 +1,9 @@
-﻿<Application x:Class="BirthdayNotifications.App"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="using:BirthdayNotifications"
-             Startup="App_OnStartup"
-             >
+﻿<Application
+  x:Class="BirthdayNotifications.App"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:local="using:BirthdayNotifications"
+  Startup="App_OnStartup">
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
