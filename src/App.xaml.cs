@@ -28,6 +28,12 @@ namespace BirthdayNotifications {
     internal static Settings Settings { get; private set; }
 
     /// <summary>
+    /// Static instance of the BirthdayNotifSettings class.
+    /// </summary>
+    [AllowNull, NotNull]
+    internal static AppSettings AppSettings { get; private set; }
+
+    /// <summary>
     /// Instance of the MainWindow class.
     /// </summary>
     [AllowNull, NotNull]
@@ -59,7 +65,7 @@ namespace BirthdayNotifications {
     /// </summary>
     public App() {
       foreach (var arg in Environment.GetCommandLineArgs()) {
-        if (arg.StartsWith("--check", StringComparison.Ordinal) ) {
+        if (arg.StartsWith("--check", StringComparison.Ordinal)) {
           CheckOnly = true;
         }
         if (arg.StartsWith("--noClose", StringComparison.Ordinal) && CheckOnly) {
@@ -78,19 +84,21 @@ namespace BirthdayNotifications {
         Current.Shutdown();
       }
 
+      AppSettings = AppSettings.Load();
+
       var release = $"birthdaynotifications-{AppUtils.GetAssemblyVersion()}-{AppUtils.GetGitHash()}";
 
       try {
         Log.Logger = new LoggerConfiguration()
-                     .WriteTo.Async(a => a.File(Path.Combine(AppUtils.GetInstanceDirectory(), "output.log")))
-                     .WriteTo.Sink(SerilogEventSink.Instance)
+        .WriteTo.Async(a => a.File(Path.Combine(AppUtils.GetInstanceDirectory(), "output.log")))
+          .WriteTo.Sink(SerilogEventSink.Instance)
 #if DEBUG
-                     .WriteTo.Debug()
-                     .MinimumLevel.Verbose()
+          .WriteTo.Debug()
+          .MinimumLevel.Verbose()
 #else
-                     .MinimumLevel.Information()
+  .MinimumLevel.Information()
 #endif
-                     .CreateLogger();
+          .CreateLogger();
 
         AppDomain.CurrentDomain.UnhandledException += EarlyInitExceptionHandler;
         TaskScheduler.UnobservedTaskException += TaskSchedulerOnUnobservedTaskException;
@@ -188,13 +196,13 @@ namespace BirthdayNotifications {
 
         if (_useFullExceptionHandler) {
           _ = CustomMessageBox.Builder
-                          .NewFrom((Exception)e.ExceptionObject, "Unhandled", CustomMessageBox.ExitOnCloseModes.ExitOnClose)
-                          .WithAppendText("\n\nError during early initialization. Please report this error.\n\n" + e.ExceptionObject)
-                          .ShowMessageBox();
+          .NewFrom((Exception)e.ExceptionObject, "Unhandled", CustomMessageBox.ExitOnCloseModes.ExitOnClose)
+          .WithAppendText("\n\nError during early initialization. Please report this error.\n\n" + e.ExceptionObject)
+          .ShowMessageBox();
         } else {
           _ = MessageBox.Show(
-              "Error during early initialization. Please report this error.\n\n" + e.ExceptionObject,
-              "XIVLauncher Error", MessageBoxButton.OK, MessageBoxImage.Error);
+          "Error during early initialization. Please report this error.\n\n" + e.ExceptionObject,
+          "XIVLauncher Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         Environment.Exit(-1);
