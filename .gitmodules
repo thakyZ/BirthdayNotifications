@@ -1,0 +1,4 @@
+[submodule "CommunityToolkit"]
+	path = lib/CommunityToolkit
+	url = https://github.com/CommunityToolkit/Windows.git
+	branch = main

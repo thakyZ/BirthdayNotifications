@@ -1,13 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net7.0-windows</TargetFramework>
     <UseWPF>True</UseWPF>
     <Platforms>x64;Any CPU</Platforms>
     <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.WinUI.Notifications" Version="7.1.2" />
     <PackageReference Include="Dragablz" Version="0.0.3.234" />
     <PackageReference Include="MaterialDesignThemes" Version="5.0.0" />
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.2.14" />
@@ -87,7 +86,9 @@
     <None Remove="$(ProjectDir)Assets\SmallTile.scale-200.png" />
     <None Include="$(SolutionDir)README.md" Pack="True" PackagePath="\" />
     <None Include="$(SolutionDir).editorconfig" />
-    <None Include="C:\Users\thaky\Development\Git\CSharp\BirthdayNotifications\src\Utils\CommandLineParser\.editorconfig" />
+    <EditorConfigFiles Remove="$(SolutionDir).editorconfig" />
+    <EditorConfigFiles Remove="$(ProjectDir)Utils\CommandLineParser\.editorconfig" />
+    <None Include="$(ProjectDir)Utils\CommandLineParser\.editorconfig" />
     <Compile Update="$(ProjectDir)Properties\Resources.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="Resources.resx" />
     <EmbeddedResource Update="$(ProjectDir)Properties\Resources.resx" Generator="ResXFileCodeGenerator" LastGenOutput="Resources.Designer.cs" />
     <None Update="$(ProjectDir)Resources\birthdaycat.png" Pack="True" PackagePath="\" />
@@ -95,8 +96,5 @@
     <EmbeddedResource Remove="$(ProjectDir)Resources\SR.resx" />
     <Resource Update="$(ProjectDir)Resources\SR.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="SR.resx" />
     <Resource Update="$(ProjectDir)Resources\SR.resx" Generator="ResXFileCodeGenerator" LastGenOutput="SR.Designer.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EditorConfigFiles Remove="C:\Users\thaky\Development\Git\CSharp\BirthdayNotifications\src\Utils\CommandLineParser\.editorconfig" />
   </ItemGroup>
 </Project>
