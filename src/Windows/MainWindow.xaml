@@ -12,7 +12,7 @@
   Title="Birthday Notification Editor"
   Width="845"
   Height="450"
-  d:DataContext="{d:DesignInstance viewModel:MainWindowViewModel}"
+  DataContext="{StaticResource viewModel:MainWindowViewModel}"
   Icon="pack://application:,,,/Resources/birthdaynotification_icon.ico"
   ResizeMode="CanMinimize"
   Style="{StaticResource MaterialDesignWindow}"

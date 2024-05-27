@@ -6,6 +6,7 @@
   xmlns:local="clr-namespace:BirthdayNotifications"
   xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:viewModel="clr-namespace:BirthdayNotifications.Windows.ViewModel"
   xmlns:windows="clr-namespace:BirthdayNotifications.Windows"
   Title="Birthday Notifications Error"
   Width="Auto"
@@ -17,6 +18,7 @@
   SizeToContent="WidthAndHeight"
   TextElement.FontWeight="Medium"
   TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+  DataContext="{StaticResource viewModel:CustomMessageBoxViewModel}"
   WindowStartupLocation="CenterScreen"
   mc:Ignorable="d">
   <Grid MouseMove="CustomMessageBox_MouseMove">

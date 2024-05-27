@@ -8,7 +8,13 @@ namespace BirthdayNotifications.Utils {
   /// Serilog event sink.
   /// </summary>
   internal sealed class SerilogEventSink : ILogEventSink {
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
     private static SerilogEventSink? instance;
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
     private readonly IFormatProvider? formatProvider;
 
     /// <summary>

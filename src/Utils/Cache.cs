@@ -11,6 +11,9 @@ using BirthdayNotifications.Properties;
 using Serilog;
 
 namespace BirthdayNotifications.Utils {
+  /// <summary>
+  /// TODO: Descriptor
+  /// </summary>
   internal class Cache {
     /// <summary>
     /// TODO: Descriptor
@@ -65,9 +68,10 @@ namespace BirthdayNotifications.Utils {
         stream.Close();
 
         foreach (var birthdayUser in App.Settings.BirthdayUsers.FindAll(b => b.Enabled.Equals(true))) {
-          if (birthdayUser.UserAvatar is null) {
+          if (birthdayUser.UserAvatar is null || birthdayUser.UserAvatar.Data is null) {
             continue;
           }
+
           using (var avatarStream = new MemoryStream(Convert.FromBase64String(birthdayUser.UserAvatar.Data.Substring("data:image/png;base64,".Length)))) {
             if (string.IsNullOrEmpty(birthdayUser.UserAvatar.Name) || string.IsNullOrWhiteSpace(birthdayUser.UserAvatar.Name)) {
               birthdayUser.UserAvatar.Name = ReturnFileName(birthdayUser.Name);
@@ -90,6 +94,8 @@ namespace BirthdayNotifications.Utils {
     /// <summary>
     /// TODO: Descriptor
     /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     private static string ReturnFileName(string name) {
       foreach (char c in System.IO.Path.GetInvalidFileNameChars()) {
         name = name.Replace(c, '_');
@@ -104,6 +110,7 @@ namespace BirthdayNotifications.Utils {
     /// <summary>
     /// TODO: Descriptor
     /// </summary>
+    /// <returns></returns>
     private static Dictionary<string, string> LoadChecksums() {
       var tempData = new Dictionary<string, string>();
       using (var md5 = MD5.Create()) {
@@ -119,6 +126,7 @@ namespace BirthdayNotifications.Utils {
     /// <summary>
     /// TODO: Descriptor
     /// </summary>
+    /// <returns></returns>
     private static bool CreateCacheFolder() {
       try {
         _ = Directory.CreateDirectory(CacheDirectory);
@@ -174,6 +182,9 @@ namespace BirthdayNotifications.Utils {
     /// <summary>
     /// TODO: Descriptor
     /// </summary>
+    /// <param name="file"></param>
+    /// <param name="stream"></param>
+    /// <returns></returns>
     private static byte[] ManipulateFile(string file, string stream) {
       using (MemoryStream stream2 = new MemoryStream(File.ReadAllBytes(file))) {
         var bi3 = new Bitmap(stream2);
@@ -212,6 +223,8 @@ namespace BirthdayNotifications.Utils {
     /// <summary>
     /// TODO: Descriptor
     /// </summary>
+    /// <param name="format"></param>
+    /// <returns></returns>
     private static ImageCodecInfo GetEncoder(ImageFormat format) {
       ImageCodecInfo[] codecs = ImageCodecInfo.GetImageDecoders();
 
@@ -227,6 +240,8 @@ namespace BirthdayNotifications.Utils {
     /// <summary>
     /// TODO: Descriptor
     /// </summary>
+    /// <param name="fileObject"></param>
+    /// <returns></returns>
     public static string GetCacheFile(string fileObject) {
       if (fileObject.Equals("birthdaycat")) {
         return Path.Join(CacheDirectory, "birthdaycat.png");
