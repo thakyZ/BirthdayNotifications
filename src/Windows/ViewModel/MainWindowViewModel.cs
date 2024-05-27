@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Data;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -18,21 +13,40 @@ using BirthdayNotifications.Utils;
 
 using MaterialDesignThemes.Wpf;
 
-using Windows.Devices.Geolocation;
+using Serilog;
 
 namespace BirthdayNotifications.Windows.ViewModel {
+  /// <summary>
+  /// TODO: Descriptor
+  /// </summary>
   class MainWindowViewModel : INotifyPropertyChanged {
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
     private readonly MainWindow _window;
-    public Action Activate;
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
+    public Action Activate { get; }
 
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
+    /// <param name="window"></param>
     public MainWindowViewModel(MainWindow window) {
       _window = window;
 
       UpdateUserList();
 
       _window.Users.SelectedIndex = 0;
+
+      Activate ??= new Action(() => Log.Warning("A MainWindowViewModel class was implemented without an Activate action specified."));
     }
 
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
+    /// <returns></returns>
     private static ObservableCollection<ListBoxItem> LoadUserList() {
       var listBoxItems = new ObservableCollection<ListBoxItem> {
         CreateListBoxItem("YOU")
@@ -45,10 +59,11 @@ namespace BirthdayNotifications.Windows.ViewModel {
       return listBoxItems;
     }
 
-    internal void UpdateUserList() {
-      BirthdayUserList = LoadUserList();
-    }
-
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     private static ListBoxItem CreateListBoxItem(string name) {
       var listBoxItem = new ListBoxItem() {
         Content = $"{name}",
@@ -59,6 +74,9 @@ namespace BirthdayNotifications.Windows.ViewModel {
       return listBoxItem;
     }
 
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
     internal void UpdateSelectedBirthdayUser() {
       CurrentUser_IsEnabled = _window.CurrentlySelected_BirthdayUser.Item2.Enabled;
       CurrentUser_Name = _window.CurrentlySelected_BirthdayUser.Item2.Name;
@@ -66,7 +84,15 @@ namespace BirthdayNotifications.Windows.ViewModel {
       SetCurrentAvatar(_window.CurrentlySelected_BirthdayUser.Item2.UserAvatar);
     }
 
-    private void SetCurrentAvatar(Avatar avatar) {
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
+    /// <param name="avatar"></param>
+    private void SetCurrentAvatar(Avatar? avatar) {
+      if (avatar is null) {
+        return;
+      }
+
       var bi3 = new BitmapImage();
       bi3.BeginInit();
       bi3.UriSource = Birthdays.GetUserAvatar(avatar);
@@ -74,21 +100,44 @@ namespace BirthdayNotifications.Windows.ViewModel {
       CurrentUser_Avatar = bi3;
     }
 
-    internal void OnWindowClosed(object sender, EventArgs args) {
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    internal void OnWindowClosed(object? sender, EventArgs args) {
       Application.Current.Shutdown();
     }
 
-    internal void OnWindowClosing(object sender, CancelEventArgs args) {
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    internal void OnWindowClosing(object? sender, CancelEventArgs args) {
       // Method intentionally left empty.
     }
 
-    public event PropertyChangedEventHandler PropertyChanged;
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
+    public event PropertyChangedEventHandler? PropertyChanged;
 
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
+    /// <param name="propertyName"></param>
     private void OnPropertyChanged([CallerMemberName][AllowNull] string propertyName = null) {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    private ObservableCollection<ListBoxItem> _birthdayUserList;
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
+    private ObservableCollection<ListBoxItem> _birthdayUserList = new();
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
     public ObservableCollection<ListBoxItem> BirthdayUserList {
       get => _birthdayUserList;
       set {
@@ -96,7 +145,14 @@ namespace BirthdayNotifications.Windows.ViewModel {
         OnPropertyChanged(nameof(BirthdayUserList));
       }
     }
+
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
     private bool _currentUser_isEnabled;
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
     public bool CurrentUser_IsEnabled {
       get => _currentUser_isEnabled;
       set {
@@ -104,7 +160,14 @@ namespace BirthdayNotifications.Windows.ViewModel {
         OnPropertyChanged(nameof(CurrentUser_IsEnabled));
       }
     }
-    private string _currentUser_name;
+
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
+    private string _currentUser_name = string.Empty;
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
     public string CurrentUser_Name {
       get => _currentUser_name;
       set {
@@ -112,7 +175,14 @@ namespace BirthdayNotifications.Windows.ViewModel {
         OnPropertyChanged(nameof(CurrentUser_Name));
       }
     }
+
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
     private DateTime _currentUser_birthDate;
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
     public DateTime CurrentUser_BirthDate {
       get => _currentUser_birthDate;
       set {
@@ -120,8 +190,15 @@ namespace BirthdayNotifications.Windows.ViewModel {
         OnPropertyChanged(nameof(CurrentUser_BirthDate));
       }
     }
-    private ImageSource _currentUser_avatar;
-    public ImageSource CurrentUser_Avatar {
+
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
+    private ImageSource? _currentUser_avatar;
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
+    public ImageSource? CurrentUser_Avatar {
       get => _currentUser_avatar;
       set {
         _currentUser_avatar = value;

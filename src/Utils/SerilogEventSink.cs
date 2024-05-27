@@ -7,15 +7,21 @@ namespace BirthdayNotifications.Utils {
   /// <summary>
   /// Serilog event sink.
   /// </summary>
-  internal class SerilogEventSink : ILogEventSink {
-    private static SerilogEventSink instance;
-    private readonly IFormatProvider formatProvider;
+  internal sealed class SerilogEventSink : ILogEventSink {
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
+    private static SerilogEventSink? instance;
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
+    private readonly IFormatProvider? formatProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SerilogEventSink"/> class.
     /// </summary>
     /// <param name="formatProvider">Logging format provider.</param>
-    private SerilogEventSink(IFormatProvider formatProvider) {
+    private SerilogEventSink(IFormatProvider? formatProvider) {
       this.formatProvider = formatProvider;
     }
 
@@ -29,9 +35,7 @@ namespace BirthdayNotifications.Utils {
     /// <summary>
     /// Gets the default instance.
     /// </summary>
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
     public static SerilogEventSink Instance => instance ??= new SerilogEventSink(null);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
     /// <summary>
     /// Emit a log event.

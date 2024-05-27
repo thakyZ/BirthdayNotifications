@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Windows;
 
 using BirthdayNotifications.Config;
 
@@ -9,55 +8,65 @@ using CommunityToolkit.WinUI.Notifications;
 
 using Serilog;
 
-using Windows.Foundation.Collections;
 using Windows.UI.Notifications;
 
 namespace BirthdayNotifications.Utils {
   /// <summary>
-  ///
+  /// TODO: Descriptor
   /// </summary>
   public class Birthdays {
     /// <summary>
-    ///
+    /// TODO: Descriptor
     /// </summary>
-    private List<BirthdayUser> BirthdayUsers { get; set; }
-
-    private Action finished;
+    private List<BirthdayUser> BirthdayUsers { get; set; } = new();
 
     /// <summary>
-    ///
+    /// TODO: Descriptor
+    /// </summary>
+    /// <returns></returns>
+    private Action Finished { get; }
+
+    /// <summary>
+    /// TODO: Descriptor
     /// </summary>
     public Birthdays() {
+      Finished = new Action(() => Log.Warning("A Birthdays class created without an action specified."));
     }
 
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
+    /// <returns></returns>
     public Birthdays(Action finished) {
-      this.finished = finished;
+      this.Finished = finished;
     }
 
+    /// <summary>
+    /// TODO: Descriptor
+    /// </summary>
+    /// <returns></returns>
     public void CheckBirthdays() {
       try {
         var birthdaysToday = GetBirthdayOfToday();
-        BirthdayUsers = birthdaysToday is not null ? birthdaysToday : new List<BirthdayUser>();
+        BirthdayUsers = birthdaysToday ?? new List<BirthdayUser>();
       } catch (Exception e) {
-        Log.Error($"Failed to get birthdays:\n{e.Message}\n{e.StackTrace}");
+        Log.Error("Failed to get birthdays:\n{0}\n{1}", e.Message, e.StackTrace);
       } finally {
         if (BirthdayUsers?.Count > 0) {
           NotifyMeOfBirthday();
         }
       }
 
-      if (finished is not null) {
-        finished.Invoke();
-      }
+      Finished?.Invoke();
     }
 
     /// <summary>
-    ///
+    /// TODO: Descriptor
     /// </summary>
     /// <returns></returns>
-#nullable enable
-    private static async Task<List<BirthdayUser>?> GetBirthdayOfTodayAsync() {
-      List<BirthdayUser>? who = await Task.Run(() => {
+    private static async Task<List<BirthdayUser>> GetBirthdayOfTodayAsync() {
+      List<BirthdayUser>? who = await Task.Run(() =>
+      {
         var whoes = new List<BirthdayUser>();
         if (App.Settings.OwnBirthday.Enabled) {
           var borthday = App.Settings.OwnBirthday.BirthdayUnix.ToLocalTime().DateTime;
@@ -76,12 +85,12 @@ namespace BirthdayNotifications.Utils {
         }
         return whoes;
       });
-      return who.Count > 0 ? who : null;
+      return who.Count > 0 ? who : new();
     }
 #nullable disable
 
     /// <summary>
-    ///
+    /// TODO: Descriptor
     /// </summary>
     /// <returns></returns>
     private static List<BirthdayUser> GetBirthdayOfToday() {
@@ -111,7 +120,7 @@ namespace BirthdayNotifications.Utils {
 #nullable disable
 
     /// <summary>
-    ///
+    /// TODO: Descriptor
     /// </summary>
     private void NotifyMeOfBirthday() {
       var toasts = new List<ToastContentBuilder>();
@@ -122,7 +131,7 @@ namespace BirthdayNotifications.Utils {
           .AddText($"{birthdayUser.Name}'s birthday is today!")
           .AddAppLogoOverride(GetUserAvatar(birthdayUser.UserAvatar), ToastGenericAppLogoCrop.Circle)
           .SetToastScenario(ToastScenario.Reminder));
-        Log.Information($"It was {birthdayUser.Name}'s birthday on this day.");
+        Log.Information("It was {0}'s birthday on this day.", birthdayUser.Name);
       });
 
       var toastNotifier = ToastNotificationManagerCompat.CreateToastNotifier();
