@@ -85,7 +85,7 @@
     <Resource Include="$(ProjectDir)Resources\*.*" />
     <None Remove="$(ProjectDir)Assets\LargeTile.scale-200.png" />
     <None Remove="$(ProjectDir)Assets\SmallTile.scale-200.png" />
-    <None Include="$(SolutionDir)..\README.md" Pack="True" PackagePath="\" />
+    <None Include="$(SolutionDir)README.md" Pack="True" PackagePath="\" />
     <None Include="$(SolutionDir).editorconfig" />
     <None Include="C:\Users\thaky\Development\Git\CSharp\BirthdayNotifications\src\Utils\CommandLineParser\.editorconfig" />
     <Compile Update="$(ProjectDir)Properties\Resources.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="Resources.resx" />
